@@ -3,20 +3,21 @@ title: "WM_selection"
 author: "Nieto_Lopez"
 date: "8/29/2018"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
-
-```{r setup, include=FALSE}
+Loading packages 
+```{r setup, include=TRUE}
+library(tidyverse)
+library(dplyr)
+library(purr)
+library(ggplot2)
+library(knitr)
+library(maps)
+library(mapdata)
 knitr::opts_chunk$set(echo = TRUE)
 ```
-Loading packages  
-```{r}
-library(tidyverse)
-library(ggplot2)
-
-```
-Reading data  
+ Reading data  
 ```{r}
 WM <- read.csv("data/WM-2015-2016-2017_fixingproductnames.csv", stringsAsFactors = TRUE)# Making the columns as factors
   WM$Year <- as.factor(WM$Year)# Changing the level of year to factor
