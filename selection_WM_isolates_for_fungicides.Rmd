@@ -9,7 +9,7 @@ output:
 #SELECTION OF WHITE MOLD ISOLATES (_Sclerotinia sclerotiorum_) FOR FUNGICIDE _IN VITRO_ TEST BY DISCRIMINATORY DOSES  
 
 
-Before produce Knit run line 263 twice  
+BBefore produce Knit run line 263 twice  
 ##Background  
 There are by very huge amount of isolates in which sampling is needed in order to know if fungicide sensitivity has decreased through the space and time.  
 
