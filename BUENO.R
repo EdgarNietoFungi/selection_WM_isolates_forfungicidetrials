@@ -1068,6 +1068,18 @@ eyebrow <- mexico_base + geom_point(
 eyebrow
 
 
+##Dataframe of selection of objective 1
+
+##Summarizing selected by Widwest
+selection3 <-
+  selection %>% filter(Selected == "selected") %>% ungroup()
+##Summarizing selected by Mexico
+selection_Mexico3 <-
+  selection_Mexico %>% filter(Selected == "selected") %>% ungroup()
+# Combining both
+selection_FINAL_objective1 <-
+  selection3 %>% bind_rows(selection_Mexico3)
+```
 
 
 
@@ -1089,4 +1101,3 @@ eyebrow
 
 
 
-###jdcsh##
