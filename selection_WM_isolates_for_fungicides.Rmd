@@ -3,21 +3,31 @@ title: "WM_selection"
 author: "Nieto_Lopez"
 date: "8/29/2018"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
-Loading packages 
-```{r setup, include=TRUE}
+#SELECTION OF WHITE MOLD ISOLATES (_Sclerotinia sclerotiorum_) FOR FUNGICIDE _IN VITRO_ TEST BY DISCRIMINATORY DOSES  
+
+
+Before produce Knit run line 263 twice  
+##Background  
+There are by very huge amount of isolates in which sampling is needed in order to know if fungicide sensitivity has decreased through the space and time.  
+
+##Objective
+ 1. Select hierarchieally isolates by space
+ 2. From objective 1, make a Venn diagram as a filterring those already used andselect hierarchieally isolates by time 
+ 
+```{r setup, include=FALSE}
+#Image: ![](Documents/to/white_mold.png)
 library(tidyverse)
 library(dplyr)
-library(purr)
 library(ggplot2)
 library(knitr)
 library(maps)
 library(mapdata)
 knitr::opts_chunk$set(echo = TRUE)
 ```
- Reading data  
+###Reading data  
 ```{r}
 WM <- read.csv("data/WM-2015-2016-2017_fixingproductnames.csv", stringsAsFactors = TRUE)# Making the columns as factors
   WM$Year <- as.factor(WM$Year)# Changing the level of year to factor
@@ -42,7 +52,7 @@ mid_west_county <-
   )
 
 ```
-Setting some objects previuosly work with
+###Setting some objects previuosly work with
 ```{r}
 tested <-
   c(
@@ -220,8 +230,8 @@ tested <-
 mexican_isolates <- c("1857":"1940")#Fungicide pre-tested isolates from Mexico
 ```
 
-White Mold selection from USA midwest  
-Data wrangling
+##White Mold selection from USA midwest  
+###Data wrangling
 ```{r}
   wm1 <-
   WM %>% select(
@@ -249,14 +259,14 @@ wm1_ <-  wm1 %>%
 wm1_$num_isolates_per_field <- as.factor(wm1_$num_isolates_per_field)#Converting as factor the levels of the new columns
 
 ```
-Cleaning and making some arrangemments from the inventory so far, run twice
-```{r}
+###Cleaning and making some arrangemments from the inventory so far, run twice
+```{r, warning= FALSE}
 wm1_ <- wm1_[-970, ]# Taking out this column that is in blank
 wm1_$long <- as.numeric(as.character(wm1_$long))# Transforming long variables to numeric
 wm1_$long <- (wm1_$long) * -1 # Transforming the long variable to the Hemispher West side
 
 ```
-Subsetting some data
+###Subsetting some data
 ```{r}
 # Creating the base map for subsequent plots
 mid_west_base <-
@@ -323,7 +333,7 @@ selection2 <- selection %>%# using the master dataframe
   ungroup()
 
 ```
-Finding randomly either by function or by hand writing  3 samples for each (by sample function) field for those groupings with less than 10 isolates/field. In those cases of error it is due there is less than 3 isolates per field but it still being okay 
+###Finding randomly either by function or by hand writing  3 samples for each (by sample function) field for those groupings with less than 10 isolates/field. In those cases of error it is due there is less than 3 isolates per field but it still being okay 
 
 ```{r}
 fields1 <- selection2 %>%
@@ -539,7 +549,7 @@ fields53 <- selection2 %>%
 aaa <- sample(fields53$Collection_ID, size = 3, replace = FALSE)
 
 ```
-Once all filters, add a new column called "selected" to the master mix dataframe 
+###Once all filters, add a new column called "selected" to the master mix dataframe 
 ```{r}
 selection <- selection %>%
   mutate(
@@ -591,8 +601,8 @@ selection <- selection %>%
   )  
 
 ```
-General Visualization of the US midewest isolates
-```{r, echo=FALSE}
+##General Visualization of the US midewest isolates by different levels
+```{r, echo=FALSE, warning= FALSE}
 base <-
   mid_west_base + geom_point(# using basis of the previous subdata
     data = wm1_,
@@ -656,9 +666,11 @@ base3 <-
   ))
 base3
 ```
-Selection of the State of Nebraska  
-As we can noticed prevously for this state, there are no fungicide field trials, in other words, there are just farmer fields
-```{r, echo=FALSE}
+
+#OBJECTIVE 1  
+#Selection of the State of Nebraska  
+###As we can noticed prevously for this state, there are no fungicide field trials, in other words, there are just farmer fields
+```{r, echo=FALSE, warning= FALSE}
 WM1S <- selection %>%# creating a subdata of NE
   group_by(State, Origin) %>%
   filter(Origin == "Farmer fields", State == "NE") %>%
@@ -749,8 +761,9 @@ hand <- NE_counties_base + geom_point(
 hand
 
 ```
-Selection of the State of Iowa  
-```{r, echo=FALSE}
+
+#Selection of the State of Iowa  
+```{r, echo=FALSE, warning= FALSE}
 WM_IA <- selection %>%# creating a subdata of IA
   filter(State == "IA")
 
@@ -840,8 +853,9 @@ pinky <- IA_counties_base + geom_point(
 pinky
 
 ```
-Selection of the State of Wisconsin  
-```{r, echo=FALSE}
+
+#Selection of the State of Wisconsin  
+```{r, echo=FALSE, warning= FALSE}
 WM_WI <- selection %>%# creating a subdata of WI
   filter(State == "WI")
 #Ordering the levels of DNA.Extraction
@@ -926,7 +940,8 @@ pointfinger
 
 ```
 
-```{r, echo=FALSE}
+#Selection of the State of Michigan
+```{r, echo=FALSE, warning= FALSE}
 #Michigan#
 WM_MI <- selection %>%# creating a subdata of MI
   filter(State == "MI")
@@ -1013,7 +1028,8 @@ anularfinger <- MI_counties_base  + geom_point(
 anularfinger
 
 ```
-Selection of the country of Mexico  
+  
+#Selection of the country of Mexico  
 ```{r}
 # Creating the base map for subsequent plots
 mexico_base <-
@@ -1037,7 +1053,7 @@ wm2_$num_isolates_per_field <-#Converting  as factor the levels of the new colum
 
 
 ```
-Cleaning and making some arrangemments from the inventory so far, run twice
+###Cleaning and making some arrangemments from the inventory so far, run twice
 ```{r}
 wm2_$long <- as.numeric(as.character(wm2_$long))# Transforming long variables to numeric
 wm2_$long <- (wm2_$long) * -1 # Transforming the long variable to the Hemispher West side
@@ -1045,7 +1061,7 @@ wm2_$long <- (wm2_$long) * -1 # Transforming the long variable to the Hemispher 
 
 
 ```
-Data wrangling
+###Data wrangling
 ```{r, echo=FALSE}
 # creating a subdata of selection_Mexico
 selection_Mexico <-
@@ -1104,7 +1120,7 @@ selection_Mexico2 <- selection_Mexico %>% # using the dataframe Selection_Mexico
   filter(Fungicide_status == "no_tested") %>% #filtering those already done and also by no fungicide pre-tested
   ungroup()
 ```
-Finding randomly either by function or by hand writing  3 samples for each (by sample function) field for those groupings with less than 10 isolates/field. In those cases of error it is due there is less than 3 isolates per field but it still being okay
+###Finding randomly either by function or by hand writing  3 samples for each (by sample function) field for those groupings with less than 10 isolates/field. In those cases of error it is due there is less than 3 isolates per field but it still being okay
 ```{r, echo=FALSE}
 bbb <-
   sample(selection_Mexico2$Collection_ID,# sampling 3 for each group
@@ -1113,7 +1129,10 @@ bbb <-
 
 
 ```
-Once all filters, add a new column called "selected" to the master mix dataframe
+###Once all filters, add a new column called "selected" to the master mix dataframe     
+
+#Selection of the country of Mexico  
+
 ```{r, echo=FALSE}
 selection_Mexico <- selection_Mexico %>%
   mutate(
@@ -1145,4 +1164,17 @@ eyebrow <- mexico_base + geom_point(
 eyebrow
 
 ```
+##Dataframe of selection of objective 1
+```{r}
+##Summarizing selected by Widwest
+selection3 <-
+  selection %>% filter(Selected == "selected") %>% ungroup()
+##Summarizing selected by Mexico
+selection_Mexico3 <-
+  selection_Mexico %>% filter(Selected == "selected") %>% ungroup()
+# Combining both
+selection_FINAL_objective1 <-
+  selection3 %>% bind_rows(selection_Mexico3)
+```
 
+#OBJECTIVE 2 
