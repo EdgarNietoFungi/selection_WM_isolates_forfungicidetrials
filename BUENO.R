@@ -17,7 +17,7 @@ library(tidyverse)
 #library(ezec)
 #library(broom)
 #library(dplyr)
-#library(sp)
+library(sp)
 # Reading data#
 WM <- read.csv("data/WM-2015-2016-2017_fixingproductnames.csv", stringsAsFactors = TRUE)
 levels(WM$Origin )[levels(WM$Origin ) == "trial"] <- "Fungicide field trials"
@@ -1071,16 +1071,55 @@ eyebrow
 ##Dataframe of selection of objective 1
 
 ##Summarizing selected by Widwest
+# selection3 <-
+#   selection %>% filter(Selected == "selected") %>% 
+#  #Collection_ID== "2344" & Collection_ID== "2403") %>%
+#     ungroup()
+
+
 selection3 <-
-  selection %>% filter(Selected == "selected") %>% ungroup()
-##Summarizing selected by Mexico
+  selection %>% filter(Selected == "selected" |
+                         Collection_ID == "2344" | Collection_ID == "2403") %>%  ungroup()
+ 
+selection3$Selected[selection3$Collection_ID == "2344"] <- "selected"
+selection3$Selected[selection3$Collection_ID == "2403"] <- "selected"
+
+##Summarizing selected by Mexico 
 selection_Mexico3 <-
   selection_Mexico %>% filter(Selected == "selected") %>% ungroup()
+
+
 # Combining both
 selection_FINAL_objective1 <-
-  selection3 %>% bind_rows(selection_Mexico3)
-```
+  selection3 %>% bind_rows(selection_Mexico3) %>% 
+  filter(Fungicide_status == "no_tested")#and also by no fungicide pre-tested
 
+###
+library(rgdal)
+library(leaflet)
+library(toolmaps)
+
+
+# Creo una columna nueva con datos random ##################################
+mexico@data$random <- 1:nrow(mexico@data)
+mexico@data$random <- sample(1000000, size = nrow(mexico@data), replace = TRUE)
+############################################################################
+
+
+pal <- colorQuantile("YlGn", NULL, n = 5)
+
+state_popup <- paste0("<strong>Estado: </strong>", 
+                      mexico$name, 
+                      "<br><strong>Valores random para cada estado: </strong>", 
+                      mexico$random)
+
+leaflet(data = mexico) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(fillColor = ~pal(random), 
+              fillOpacity = 0.8, 
+              color = "#BDBDC3", 
+              weight = 1, 
+              popup = state_popup)
 
 
 
