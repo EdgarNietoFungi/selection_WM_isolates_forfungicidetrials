@@ -3,8 +3,8 @@ title: "WM_selection"
 author: "Nieto_Lopez"
 date: "8/29/2018"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 ```{r setup, include=FALSE}
 #Image: ![](Documents/to/white_mold.png)
@@ -648,7 +648,7 @@ wm2_$long <- (wm2_$long) * -1 # Transforming the long variable to the Hemispher 
 # creating a subdata of selection_Mexico
 selection_Mexico <-
   wm2_ %>% select(
-    Collection_ID,
+   Collection_ID,
     State,
     County,
     Field,
@@ -660,15 +660,15 @@ selection_Mexico <-
     DNA.Extraction,
     Serial_agar_dilution_for_creating_the_model_..N.20.,
     Form.ID,
-    #Fungicide_status,
+    Fungicide_status,
     num_isolates_per_field
-  ) %>%# Selecting 15 the most important columns so far
-  group_by(State, County, Field) %>%
-  mutate(num_ISO_per_field = n()) %>%
+  ) %>%
+  group_by(State, County, Field) %>%# grouping in order to select those with >=3 isolates/field/County/State 
+  mutate(num_ISO_per_field = n()) %>%# Creating the column to count them 
   ungroup %>%
-  group_by(County) %>%
-  mutate(num_field_County = length(unique(factor(Field)))) %>%
-  select(
+  group_by(State, County) %>%# grouping in order to select those   fields(>=3 isolates)/County/State 
+  mutate(num_field_County = length(unique(factor(Field)))) %>%# Creating the column to count them 
+  select(# Ordering the collumns to easy visulalization
     Collection_ID,
     State,
     County,
@@ -683,9 +683,11 @@ selection_Mexico <-
     DNA.Extraction,
     Serial_agar_dilution_for_creating_the_model_..N.20.,
     Form.ID,
-    #Fungicide_status,
+    Fungicide_status,
     num_isolates_per_field
   )
+
+
 #Subdata for randomly selection of those 3 isolates/field/county/state
 selection_Mexico1 <- selection_Mexico %>%
   ungroup() %>%
@@ -730,8 +732,8 @@ selection_Mexico3 <-
 ```
 
 ##Dataframe of selection of objective 1
-selection_FINAL_objective1  + tested (170)
-164+ 170
+selection_FINAL_objective1 194 but tested (170)
+188+ 170
 
 total with this 334 
 Check by diagram of 
@@ -795,7 +797,7 @@ face <- NE_county_base + geom_point(
   inherit.aes = FALSE,
   na.rm = TRUE
 ) + theme(legend.position = "bottom") + #+ facet_wrap( ~ num_isolates_per_field)  #Wrapping by the # of isolates/field
-  scale_color_manual(values = c("red", "blue")) + theme(legend.position = "bottom") + labs(title = "Sclerotinia sclerotiorum Soybean  from Nebraska") + theme(plot.title = element_text(
+  scale_color_manual(values = c("red", "blue")) + theme(legend.position = "bottom") +  labs(title = "Sclerotinia sclerotiorum Soybean  from Nebraska") + theme(plot.title = element_text(
     size = 10,
     face = "bold",
     hjust = 0.5,
@@ -1066,7 +1068,7 @@ nose <- WI_county_base  + geom_point(
   inherit.aes = FALSE,
   na.rm = TRUE
 ) + theme(legend.position = "bottom") + #facet_wrap( ~ num_isolates_per_field) +#Wrapping by the # of isolates/field
-  scale_color_manual(values = c("red", "blue")) + theme(legend.position = "bottom") + labs(title = "Sclerotinia sclerotiorum Soybean from Iowa") + theme(plot.title = element_text(
+  scale_color_manual(values = c("red", "blue")) + theme(legend.position = "bottom") + labs(title = "Sclerotinia sclerotiorum Soybean from Wisconsin") + theme(plot.title = element_text(
     size = 10,
     face = "bold",
     hjust = 0.5,
@@ -1106,7 +1108,7 @@ nose <- WI_county_base  + geom_point(
   inherit.aes = FALSE,
   na.rm = TRUE
 ) + theme(legend.position = "bottom") + facet_wrap( ~ num_isolates_per_field) +#Wrapping by the # of isolates/field
-  scale_color_manual(values = c("red", "blue")) + theme(legend.position = "bottom") + labs(title = "Sclerotinia sclerotiorum Soybean selection from Iowa") + theme(plot.title = element_text(
+  scale_color_manual(values = c("red", "blue")) + theme(legend.position = "bottom") + labs(title = "Sclerotinia sclerotiorum Soybean selection from Wisconsin") + theme(plot.title = element_text(
     size = 10,
     face = "bold",
     hjust = 0.5,
@@ -1152,7 +1154,7 @@ pointfinger <- WI_counties_base + geom_point(
   inherit.aes = FALSE,
   na.rm = TRUE
 ) + theme(legend.position = "bottom") + facet_wrap( ~ num_isolates_per_field) +#Wrapping by the # of isolates/field
-  scale_color_manual(values = c("red", "blue")) + theme(legend.position = "bottom") + labs(title = "Sclerotinia sclerotiorum Soybean inventory from Nebraska 'No fungicide tested'") + theme(plot.title = element_text(
+  scale_color_manual(values = c("red", "blue")) + theme(legend.position = "bottom") + labs(title = "Sclerotinia sclerotiorum Soybean inventory from Wisconsin 'No fungicide tested'") + theme(plot.title = element_text(
     size = 10,
     face = "bold",
     hjust = 0.5,
@@ -1416,14 +1418,21 @@ base3
   Select isolates by the time,  by filterring the points from IA & MI before visualized, make a Venn diagram with allalready used for fungicide trials from objective 1.
  
 ```{r}
-IA_fungicide <- WMfungicide %>% filter(State=="IA",  County =="Floyd"|County =="Chickasaw"|County =="Floyd"|County =="Bremer")
+IA_fungicide <- WMfungicide %>% filter(State=="IA",  County =="Floyd"|County =="Chickasaw"|County =="Butler"|County =="Bremer")
 MI_fungicide <- WMfungicide %>%ungroup() %>%  filter(  Field =="mon" |Field =="mont"  )
-fungicideTRIALS <- MI_fungicide %>% bind_rows(MI_fungicide)
+montcalm <- c("1671":"1830",  "2247":"2302")
+#fungicideTRIALS <- MI_fungicide %>% bind_rows(MI_fungicide)
 bettle <- MI_fungicide %>% 
 mutate(Fungicide_status = ifelse(Collection_ID%in%selection_FINAL_objective1$Collection_ID,
-                                 "sync",ifelse(Collection_ID%in% tested,"sync", "no_sync"))) %>% filter(Fungicide_status== "sync")
+                                 "sync",ifelse(Collection_ID%in% tested,"sync","no_sync"))) %>% filter(Fungicide_status== "sync")
+aphelenchus <-IA_fungicide %>% 
+mutate(Fungicide_status = ifelse(Collection_ID%in%selection_FINAL_objective1$Collection_ID,
+                                 "sync",ifelse(Collection_ID%in% tested,"sync","no_sync")))  #filter(Fungicide_status== "sync")                                                #ifelse(Collection_ID%in% montcalm,"sync", "no_sync")))) %>% 
+  #filter(Fungicide_status== "sync")
 
 sum(selection$Field=="lan" ) + sum(selection$Field=="mon" )+sum(selection$Field=="mont" )
+bursapehelnchus <- bettle %>% mutate(Selection_status=
+                       ifelse(Collection_ID%in% montcalm, "yes", "no"))
                                   
 ```
  
@@ -1439,6 +1448,7 @@ selection_FINAL_objective3_genotyping <-
   selection3 %>% bind_rows(selection_Mexico3)%>% 
    filter(DNA.Extraction == "No DNA extraction") #by no DNA extraction
 ```
+
 ```{r}
 #Nebraska
 WM1S <- selection %>%# creating a subdata of NE
