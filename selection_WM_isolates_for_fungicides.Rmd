@@ -43,14 +43,13 @@ mid_west_county <-
 ```
 Before produce Knit run line 263 twice    
 ## Background    
-Fungicide applications are essential for maintaining healthy, reliable, and high-quality agricultural products. Resistance to fungicides is an increasing threat to this effectiveness and has already been reported for 203 plant pathogenic fungi (Fungicide Resistance Action Committee 2013). Soybean is the second most important crop in the U.S. and contributes significantly to the nation’s economy with annual sales of $38.7 billion, accounting for 10 percent of total U.S. agriculture sales (Census of Agriculture 2012). In the temperate North Central soybean production areas of the United States, the white mold disease can be a significant yield limiting disease, with reported losses more than 10 million bushels per year (Peltier et al. 2012). This yield loss is significant and makes S. sclerotiorum one of the most important pathogens of soybean in the North Central U.S. In Mexico, dry common bean (_Phaseolus_ _vulgaris_) is the second most important crop and is also significantly affected by _S._ _sclerotiorum_. For example, in the State of Sinaloa, _S._ _sclerotiorum_ causes up to 75% yield loss in dry bean and is considered the most important fungal pathogen (Apodaca et al. 2011).
+Fungicide applications are essential for maintaining healthy, reliable, and high-quality agricultural products. Resistance to fungicides is an increasing threat to this effectiveness and has already been reported for 203 plant pathogenic fungi (Fungicide Resistance Action Committee 2013). Soybean is the second most important crop in the U.S. and contributes significantly to the nation’s economy with annual sales of $38.7 billion, accounting for 10 percent of total U.S. agriculture sales (Census of Agriculture 2012). In the temperate North Central soybean production areas of the United States, the white mold disease can be a significant yield limiting disease, with reported losses more than 10 million bushels per year (Peltier et al. 2012). This yield loss is significant and makes S. sclerotiorum one of the most important pathogens of soybean in the North Central U.S. In Mexico, dry common bean (_Phaseolus vulgaris_) is the second most important crop and is also significantly affected by _S._ _sclerotiorum_. For example, in the State of Sinaloa, _S._ _sclerotiorum_ causes up to 75% yield loss in dry bean and is considered the most important fungal pathogen (Apodaca et al. 2011).
 Lack of adequate levels of host resistance means that fungicides are the primary method of disease control (Bardin and Huang 2001). A major problem is that by the time fungicide resistance is detected by growers, it may be too late to prevent spread of fungicide resistance. Identifying changes in fungicide sensitivity requires knowledge of existing baseline sensitivity to each class of fungicides. Acquisition of fungicide resistance within a completely susceptible population begins with emergence and is followed by selection and adjustment phases. Few studies have addressed the emergence phase and there is a debate about the role of fungicide dose (Van Den Bosch et al. 2011). In the literature, authors speculate that rate of resistance emergence may be directly related to pathogen exposure to low-doses of fungicides (Gressel 2011), which may increase with fewer fungicide applications, such as is recommended in an Integrate Pest Management (IPM) method (Beckerman et al. 2015). This is relevant to soybean production because low-doses of fungicides are likely to occur in the field, whether due to intentional reduction of application rates or unintentionally because of incomplete spray coverage. Other factors related to risk of resistance emergence in fungal plant pathogens is the mechanism of reproduction of the fungus (sexual out-crossing, sexual selfing or asexual reproduction) and population structure of the pathogen. Knowledge of the population structure and spread of _S._ _sclerotiorum_ on soybean and dry bean is needed.  
 
 ## THE FIRST PART OF DISSERTATION, Survey fungicide sensitivity of populations of S. sclerotiorum from soybean
 #Background
 Knowledge of baseline sensitivity of a pathogen population to fungicides is important for detection of resistance and for achieving effective disease management strategies (Brent and Holloman 2007). QoI, DMI, MBC and SDHI fungicides are used to control _S._ _sclerotiorum_ in an IPM approach in soybean and dry bean in the U.S. DMI fungicides are considered to medium risk of resistance emergence, whereas QoI, SDHI and MBC are high risk (Fungicide Resistance Action Committee 2016). MBC and dicarboximide fungicides are used for white mold in Brazil, wherein resistance to MBC fungicide, Thiophanate methyl, has been reported (Lehner et al. 2015). Fungicide resistance has also been reported in China to the MBC, Carbendazim and dicarboximide, Dimethachlon (Ma et al. 2009). Field application of fungicides in the United States on soybean show control of S. sclerotiorum is low to fair for QoI, DMI and MBC fungicides, and good for SDHI fungicides (The North Central Regional Committee on Soybean Diseases 2015). However, it is unknown whether efficacy is related to reduce sensitivity within populations under study. Therefore, the __hypothesis of this objective is that there are isolates of _S. sclerotiorum_ with low sensitivity to the most commonly used fungicides in the North Central United States.__  
 
-__Expected results__
 __Results will be used to determine whether some isolates are resistant to a given fungicide. It is expected that resistance to fungicides with single-site modes (β -tubulin assembly in mitosis, C14 demethylase in sterol biosynthesis, complex III cytochrome bc1 at Qo site and complex II succinate-dehydro-genase) of action will be more common than for multi-site fungicides__
 
 
@@ -564,7 +563,7 @@ aaa <- sample(fields53$Collection_ID, size = 3, replace = FALSE)
 ```{r}
 selection <- selection %>%
   mutate(
-    Selected = case_when(
+    Status = case_when(
       Collection_ID %in% selection1$Collection_ID ~ "selected",# filtering and naming "selected"" in case of in
       Collection_ID %in% a ~ "selected",
       Collection_ID %in% b ~ "selected",
@@ -617,11 +616,11 @@ selection <- selection %>%
 ```{r}
   ##Summarizing selected by Widwest
 selection3 <-
-  selection %>% filter(Selected == "selected" |
+  selection %>% filter(Status == "selected" |
                          Collection_ID == "2344" | Collection_ID == "2403") %>%  ungroup()
  
-selection3$Selected[selection3$Collection_ID == "2344"] <- "selected"
-selection3$Selected[selection3$Collection_ID == "2403"] <- "selected"
+selection3$Status[selection3$Collection_ID == "2344"] <- "selected"
+selection3$Status[selection3$Collection_ID == "2403"] <- "selected"
 
 ```
 
@@ -725,7 +724,7 @@ bbb <-
 ```{r}
 selection_Mexico <- selection_Mexico %>%
   mutate(
-    Selected = case_when(
+    Status = case_when(
       Collection_ID %in% selection_Mexico1$Collection_ID ~ "selected",# filtering and naming "selected"" in case of in
       Collection_ID %in% bbb ~ "selected",
       TRUE ~ "not_selected"# in case of not, naming "not_selected""
@@ -736,7 +735,7 @@ selection_Mexico <- selection_Mexico %>%
 ```{r}
 ##Summarizing selected by Mexico
 selection_Mexico3 <-
-  selection_Mexico %>% filter(Selected == "selected") %>% ungroup()
+  selection_Mexico %>% filter(Status == "selected") %>% ungroup()
 ```
 
 ##Dataframe of selection of objective 1
@@ -892,7 +891,7 @@ hand <- NE_counties_base + geom_point(
   aes(
     x = long,
     y = lat,
-    color = Selected 
+    color = Status 
     #label= Collection_ID
     # by color the level of selection
     #shape = Year# by shape the level of Year
@@ -978,7 +977,7 @@ IA_county_base <-
 #   aes(
 #     x = long,
 #     y = lat,
-#     color = Selected,# by color the level of selection
+#     color = Status,# by color the level of selection
 #     shape = Year,# by shape the level of Year
 #     size = DNA.Extraction# by size the level of DNA.Extraction
 #   ),
@@ -1028,7 +1027,7 @@ pinky <- IA_counties_base + geom_point(
   aes(
     x = long,
     y = lat,
-    color = Selected# by color the level of selection
+    color = Status# by color the level of selection
     #shape = Year,# by shape the level of Year
    # size = DNA.Extraction# by size the level of DNA.Extraction
   ),
@@ -1109,7 +1108,7 @@ WI_county_base <-# Creating the base to use for next plots
 #   aes(
 #     x = long,
 #     y = lat,
-#     color = Selected,# by color the level of selection
+#     color = Status,# by color the level of selection
 #     shape = Year,# by shape the level of Year
 #     size = DNA.Extraction# by size the level of DNA.Extraction
 #   ),
@@ -1155,7 +1154,7 @@ pointfinger <- WI_counties_base + geom_point(
   aes(
     x = long,
     y = lat,
-    color = Selected# by color the level of selection
+    color = Status# by color the level of selection
     #shape = Year,# by shape the level of Year
     #size = DNA.Extraction# by size the level of DNA.Extraction
   ),
@@ -1239,7 +1238,7 @@ WM_county_base <-# Creating the base to use for next plots
 #   aes(
 #     x = long,
 #     y = lat,
-#     color = Selected,# by color the level of selection
+#     color = Status,# by color the level of selection
 #     shape = Year,# by shape the level of Year
 #     size = DNA.Extraction# by size the level of DNA.Extraction
 #   ),
@@ -1286,7 +1285,7 @@ anularfinger <- MI_counties_base  + geom_point(
   aes(
     x = long,
     y = lat,
-    color = Selected# by color the level of selection
+    color = Status# by color the level of selection
     #shape = Year,# by shape the level of Year
     #size = DNA.Extraction# by size the level of DNA.Extraction
   ),
@@ -1333,7 +1332,7 @@ eyebrow
 
 #Bckground
 IPM strategies for plant diseases are designed to reduce pesticide rates (Beckerman 2015). Low pesticide rates reduce selection pressure of major single gene resistance and multifactorial resistance (Gressel 1995). However, it is known that application of pesticides is necessarily non-uniform, which can result in sublethal exposure of the target pathogen to fungicides that may cause cellular stress. Such stress simulated under in vitro conditions was recently shown to increase mutation rates at SSR loci and alter genomic AFLP patterns (Amaradasa and Everhart 2016), and other studies have shown cellular stress can induce gene duplications (Kondrashov and Kondrashov 2006). Based on a model of evolutionary potential of pathogen populations, _S. sclerotiorum_ is considered to have intermediate risk of fungicide resistance (McDonald and Linde 2002). Population genetic studies of _S. sclerotiorum_ show low genotypic diversity and mostly clonal reproduction, which means that mutation is a more important source of genetic variation and may be related to fungicide resistance emergence. To test this hypothesis, the effect of field-applied fungicide doses on stress-induced mutation rate and fungicide sensitivity will be evaluated using simple sequence repeats (SSR) genotyping and fungicide sensitivity assays. Controls with no fungicide application will be compared to fungicide-treated plots.  
-the __hypothesis of this objective is that fungicide applications increase genetic diversity of _S. sclerotiorum_ population by field-applied fungicide doses on stress-induced mutation 
+__the hypothesis of this objective is that fungicide field applications ( stress-induced mutation) increase genetic diversity of _S. sclerotiorum_ population.__ 
 
 ##General Visualization of the US midewest isolates from fungicide field trials at different years
 
@@ -1425,7 +1424,13 @@ bursapehelnchus <- bettle %>% mutate(Selection_status=
  
  
  
-#THIRD PART OF DISSERTATION, Characterize the population structure and genetic diversity of S. sclerotiorum populations from soybean throughout the North Central United States and Mexico
+#THIRD PART OF DISSERTATION, Characterize the population structure and genetic diversity of _S. sclerotiorum_ populations from soybean throughout the North Central United States and Mexico
+#Background
+_S. sclerotiorum_ has a haploid somatic phase and its reproduction could be asexual by sclerotia and sexual by self-fertilization or outcrossing (Kohn 1995). Population studies on S. sclerotiorum have revealed a predominantly clonal mode of reproduction (Cubeta et al. 1997; Kohli and Kohn 1998) with some evidence of outcrossing in a few regions (Atallah et al. 2004; Kohli and Kohn 1998). Recent studies identified mostly clonal genotypes from common bean with no significant difference between the most distant places (France, Australia and the U.S.), which is contrary to that expected because S. sclerotiorum is a soil borne pathogen. Results further indicated genotypes from Mexico and those isolated in 2005 were the strongest predictors of the genetic variation. Based on that, more isolates from the U.S. and Mexico are needed to further clarify the significance of genetic variation associated with Mexico. Thus, the aims of my research objective is to use SSR genotyping to estimate levels of genetic diversity within populations of S. sclerotiorum from soybean in the North Central United States and from dry bean in Mexico. Therefore, __the hypothesis is that Mexico is the point of origin of _S. sclerotiorum_ where sexual outcrossing ocurred  possibly due to more conducive environmental conditions?__
+
+Results will be useful for inferring mechanisms of spread and evolution of the pathogen, which enable us to answer questions, such as: Is there evidence that Mexico is the point of origin of S. sclerotiorum? Is there evidence of sexual outcrossing in Mexico, possibly due to more conducive environmental conditions?
+
+
   
  . Select hierarchieally isolates by space according to genotype 
  
@@ -1459,7 +1464,7 @@ water <- NE_county_base + geom_point(
   aes(
     x = long,
     y = lat,
-    #color = Selected, #by color the level of selection
+    #color = Status, #by color the level of selection
     #shape = Year,# by shape the level of Year
     color = DNA.Extraction# by size the level of DNA.Extraction
   ),
