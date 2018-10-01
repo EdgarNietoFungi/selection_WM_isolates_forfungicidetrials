@@ -24,7 +24,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 ###Reading data 
 ```{r}
-##
+###
 WM <- read.csv("data/WM-2015-2016-2017_fixingproductnames.csv", stringsAsFactors = TRUE)# Making the columns as factors
   
 WM<- WM[-1054, ]# Taking out this column that is in blank
