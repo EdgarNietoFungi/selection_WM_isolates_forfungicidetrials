@@ -25,11 +25,11 @@ knitr::opts_chunk$set(echo = TRUE)
 ###Reading data 
 ```{r}
 ###
-WM <- read.csv("data/WM-2015-2016-2017_fixingproductnames.csv", stringsAsFactors = TRUE)# Making the columns as factors
+WM <- read.csv("data/WM-fixingproductnamesID2416.csv", stringsAsFactors = TRUE)# Making the columns as factors
   
-WM<- WM[-1054, ]# Taking out this column that is in blank
+WM<- WM[-c(1055,419,423, 432),]# Taking out this row that is in blank
 WM$long <- as.numeric(as.character(WM$long))# Transforming long variables to numeric
-WM<- WM[-1293, ]
+#WM<- WM[-1293, ]
 WM$long <- (WM$long) * -1 # Transforming the long variable to the Hemispher West side
 
 
@@ -76,6 +76,7 @@ __Results will be used to determine whether some isolates are resistant to a giv
 
 ### Setting some objects previuosly work with
 ```{r}
+#Aready susbsitited the formID of baselines isolates for the Collection_ID  
 tested <-# #Fungicide pre-tested isolates from USA midwest including baselines and  Mexican isolates
   c(
     "1",
@@ -96,24 +97,24 @@ tested <-# #Fungicide pre-tested isolates from USA midwest including baselines a
     "645",
     "800",
     "667",
-    "74SS1",
+    "74-SS-2",
     "8",
     "87",
-    "318",
-    "413",
-    "419",
-    "62-02",
-    "62-03",
-    "62-04",
-    "78-01",
-    "78-02",
-    "78-05",
-    "H-01",
-    "H-03",
-    "H-04",
-    "I-20",
-    "S-01",
-    "W212",
+    "2390" ,
+    "2386",
+    "2385",
+    "2098",
+    "2099",
+    "2100",
+    "2139",
+    "2140",
+    "2143",
+    "2220",
+    "2222",
+    "2223",
+    "2362",
+    "2320",
+    "2388",
     "1025",
     "1026",
     "1027",
@@ -237,17 +238,17 @@ tested <-# #Fungicide pre-tested isolates from USA midwest including baselines a
     "1722",
     "1731",
     "1732",
-    "1791",
-    "1",
-    "118",
-    "123",
-    "20",
-    "74SS1",
-    "8",
-    "419",
-    "78-02",
-    "H-01",
-    "H-03"
+    "1791"
+    # "1", # since here repeated
+    # "118",
+    # "123",
+    # "20",
+    # "74-SS-2",
+    # "8",
+    # "2385",
+    # "2140",
+    # "2220",
+    # "2222"
   )  
 mexican_isolates <- c("248","1857":"1940" )#All isolates from Mexico
 ```
@@ -373,7 +374,7 @@ b<- st_as_sf(a, coords = c("long", "lat"))
 #is Set the projection as ESPG 4326 (long_lat)
 
 st_crs(b) <- 4326
-st
+
 # Apply the st_distance function
 
 dist_m <- st_distance(b)# euclidian distance
