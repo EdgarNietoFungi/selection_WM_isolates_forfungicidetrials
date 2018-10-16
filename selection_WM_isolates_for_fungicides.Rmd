@@ -26,8 +26,10 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 ###
 WM <- read.csv("data/WM-fixingproductnamesID2416.csv", stringsAsFactors = TRUE)# Making the columns as factors
-  
-WM<- WM[-c(1055,419,423, 432),]# Taking out this row that is in blank
+#filtering 
+WM <-  WM %>% 
+   filter(!Collection_ID== "429", !Collection_ID== "433", !Collection_ID== "442", !Collection_ID== "1048", !Collection_ID== "1049", !Collection_ID== "2217", !Collection_ID== "2219", !Collection_ID== "2226", !Collection_ID== "2245", !Collection_ID== "2307", !Collection_ID== "2327", !Collection_ID== "2352", !Collection_ID== "2366", !Collection_ID== "2367", !Collection_ID== "2380", !Collection_ID== "2392"  )
+#WM<- WM[-c(1055,419,423, 432),]# Taking out this row that is in blank
 WM$long <- as.numeric(as.character(WM$long))# Transforming long variables to numeric
 #WM<- WM[-1293, ]
 WM$long <- (WM$long) * -1 # Transforming the long variable to the Hemispher West side
@@ -35,7 +37,8 @@ WM$long <- (WM$long) * -1 # Transforming the long variable to the Hemispher West
 
 #WM$Collection_ID=="2215"
 WM$Year <- as.factor(WM$Year)# Changing the level of year to factor
-  WM$Collection_ID <- as.numeric(WM$Collection_ID)# The goal is to change  the level of Collection to numeric, but for some reason, it should be by step by step. Changing the level of year to numeric in first approach 
+#the following markas an error that is why it was uncripted  
+#WM$Collection_ID <- as.numeric(WM$Collection_ID)# The goal is to change  the level of Collection to numeric, but for some reason, it should be by step by step. Changing the level of year to numeric in first approach 
   WM$Collection_ID <- as.character(WM$Collection_ID)#Changing the level of year to character as second approach
   levels(WM$Origin )[levels(WM$Origin ) == "trial"] <- "Fungicide field trials"#Changing the name to be more specific
   levels(WM$Origin )[levels(WM$Origin ) == "Survey"] <- "Farmer fields"#Changing the name to be more specific
@@ -97,7 +100,7 @@ tested <-# #Fungicide pre-tested isolates from USA midwest including baselines a
     "645",
     "800",
     "667",
-    "74-SS-2",
+    "74-SS-1",
     "8",
     "87",
     "2390" ,
@@ -239,18 +242,23 @@ tested <-# #Fungicide pre-tested isolates from USA midwest including baselines a
     "1731",
     "1732",
     "1791"
-    # "1", # since here repeated
-    # "118",
-    # "123",
-    # "20",
-    # "74-SS-2",
-    # "8",
-    # "2385",
-    # "2140",
-    # "2220",
-    # "2222"
-  )  
-mexican_isolates <- c("248","1857":"1940" )#All isolates from Mexico
+    # "1",  #since here repeated
+    #  "118",
+    #  "123",
+    #  "20",
+    #  "74-SS-2",
+    #  "8",
+    #  "2385",
+    #  "2140",
+    #  "2220",
+    #  "2222"
+  )
+mexican_isolates <- c("242","248","248a","248b","615":"632", "779","1857":"1940" )#All isolates from Mexico
+baseline_isolates <- c("1","118", "123", "12B", "129", "20", "21", "449", "461", "467", "475", "558", "564", "568", "581", "645", "800", "667", "74-SS-1", "8", "87")
+white_mold_nursery <- c( "449", "461", "467", "475", "558", "564", "568", "581", "645", "800", "667")
+
+#survey_before_fungicides_lunched <- c("1","118", "123", "12B", "129", "20", "21",  "74-SS-1", "8", "87")
+
 ```
 
 ##White Mold selection from USA midwest  
@@ -259,6 +267,7 @@ mexican_isolates <- c("248","1857":"1940" )#All isolates from Mexico
   wm1 <-
   WM %>% select(
     Collection_ID,
+    Host, 
     State,
     Field,
     Year,
@@ -268,18 +277,34 @@ mexican_isolates <- c("248","1857":"1940" )#All isolates from Mexico
     hyphal_tip..ht.,
     DNA.Extraction,
     County,
+    Country,
     Serial_agar_dilution_for_creating_the_model_..N.20.,
-    Form.ID
-  )# Selecting 15 the most important columns so far
+    Form.ID 
+      )# Selecting 16 the most important columns so far
 
 wm1_ <-  wm1 %>%
   mutate(Fungicide_status = ifelse(Collection_ID  %in% tested,
                                    "tested", "no_tested")) %>%# Creating a new column based wheather or not funcides pretested
-  filter(!Collection_ID %in% mexican_isolates) %>%#Taking out mexican isolates
+ # filter(!Collection_ID %in% mexican_isolates) %>%#Taking out mexican isolates
   group_by(Field) %>% mutate (num_isolates_per_field = ifelse(n() > 2, "≥3isolates/Field", "<3isolates/Field")) %>%#Creating a new column if the number of isolates/field is major than 2
   ungroup()
 
 wm1_$num_isolates_per_field <- as.factor(wm1_$num_isolates_per_field)#Converting as factor the levels of the new columns
+
+levels(wm1_$Origin) = c("", "Farmer fields", "Fungicide field trials", "White mold nursery")#, "Farmer fields before fungicides lunched")
+
+
+wm1_[(which(wm1_$Collection_ID %in% white_mold_nursery)), 5] <- "White mold nursery"
+
+#wm1_[(which(wm1_$Collection_ID %in% survey_before_fungicides_lunched)), 5] <- "Farmer fields before fungicides lunched"
+
+wm1__ <- wm1_ %>% select(Collection_ID, State, County, Country, Origin, Year, Fungicide_status, Host) %>% filter(Fungicide_status == "tested", Host== "drybeans") 
+q <- wm1__ %>%  group_by(State) %>% summarize(n=n())
+ wm1__ %>%  group_by(State, Origin) %>% summarize(n=n())
+ 
+wm1___ <- wm1_ %>% select(Collection_ID, State, County, Country, Origin, Year, Fungicide_status, Host) %>% filter(Fungicide_status == "tested", Host== "soybeans") 
+qq <- wm1___ %>%  group_by(State, Origin) %>% summarize(n=n())
+ wm1__ %>%  group_by(State, Origin) %>% summarize(n=n())
 
 ```
 ###Cleaning and making some arrangemments from the inventory so far, run twice
@@ -316,7 +341,7 @@ wm2_ <-  wm1 %>%
   # group_by(Field) %>% mutate (num_isolates_per_field = ifelse(n() > 2, "≥3isolates/Field", "<3isolates/Field")) %>%#Creating a new column if the number of isolates/field is major than 2
   ungroup()
 
-#taking 9 samples for each field selected and no taking those isolates already done
+#taking 9 samples for each field selected and no taking those isolates already done in the pre test by  the combiningfungicides_outliersEC50DC object
 selection_nice <- wm2_  %>%
   ungroup() %>%
   filter(
