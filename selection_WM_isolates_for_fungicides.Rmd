@@ -25,7 +25,9 @@ knitr::opts_chunk$set(echo = TRUE)
 ###Reading data 
 ```{r}
 ###
-WM <- read.csv("data/WM-fixingproductnamesID2416.csv", stringsAsFactors = FALSE)# Making the columns as factors
+WM <- read.csv("data/WM-fixingproductnamesID2416.csv", stringsAsFactors = FALSE)# Making the columns as 
+WM$Collection_ID <- str_squish(WM$Collection_ID)
+#factors
 #filtering 
 WM <-  WM %>% 
    filter(!Collection_ID== "429", !Collection_ID== "433", !Collection_ID== "442", !Collection_ID== "1048", !Collection_ID== "1049", !Collection_ID== "2217", !Collection_ID== "2219", !Collection_ID== "2226", !Collection_ID== "2245", !Collection_ID== "2307", !Collection_ID== "2327", !Collection_ID== "2352", !Collection_ID== "2366", !Collection_ID== "2367", !Collection_ID== "2380", !Collection_ID== "2392"  )
@@ -44,7 +46,7 @@ WM$Country <- as.factor(WM$Country)
 WM$Field <- as.factor(WM$Field)
 WM$Form.ID <- as.factor(WM$Form.ID)
 WM$Serial_agar_dilution_for_creating_the_model_..N.20. <- as.factor(WM$Serial_agar_dilution_for_creating_the_model_..N.20.)
-WM$Origin<- as.factor(WM$Origin)
+#WM$Origin<- as.factor(WM$Origin)
 WM$hyphal_tip..ht. <- as.factor(WM$hyphal_tip..ht.)
 WM$DNA.Extraction <- as.factor(WM$DNA.Extraction)
 WM$Size.of.field..acres. <- as.factor(WM$Size.of.field..acres.)
@@ -67,8 +69,8 @@ WM$Apparently.low.sensitiviy<- as.factor(WM$Apparently.low.sensitiviy)
 #the following markas an error that is why it was uncripted  
 # The goal is to change  the level of Collection to numeric, but for some reason, it should be by step by step. Changing the level of year to numeric in first approach 
  # WM$Collection_ID <- as.character(WM$Collection_ID)#Changing the level of year to character as second approach
-  levels(WM$Origin )[levels(WM$Origin ) == "trial"] <- "Fungicide field trials"#Changing the name to be more specific
-  levels(WM$Origin  )[levels(WM$Origin ) == "Survey"] <- "Farmer fields"#Changing the name to be more specific
+ # levels(WM$Origin )[levels(WM$Origin ) == "trial"] <- "Fungicide field trials"#Changing the name to be more specific
+  #levels(WM$Origin  )[levels(WM$Origin ) == "Survey"] <- "Farmer fields"#Changing the name to be more specific
   levels(WM$DNA.Extraction )[levels(WM$DNA.Extraction ) == ""] <- "No DNA extraction"#Changing the name to be more specific
   levels(WM$DNA.Extraction )[levels(WM$DNA.Extraction ) == "No"] <- "No DNA extraction"#Changing the name to be more specific
   levels(WM$DNA.Extraction )[levels(WM$DNA.Extraction ) == "Yes"] <- "Yes DNA extraction"#Changing the names to be more specific
@@ -362,20 +364,30 @@ wm1_ <-  wm1 %>%
 
 wm1_$num_isolates_per_field <- as.factor(wm1_$num_isolates_per_field)#Converting as factor the levels of the new columns
 
-levels(wm1_$Origin) = c("", "Farmer fields", "Fungicide field trials", "Baseline isolates")#, "Farmer fields before fungicides lunched")
-
-
 wm1_[(which(wm1_$Collection_ID %in% baseline_isolates)), 6] <- "Baseline isolates"
+
+
+levels(wm1_$Origin )[levels(wm1_$Origin ) == "trial"] <- "Fungicide field trials"#Changing the name to be more specific
+  levels(wm1_$Origin  )[levels(wm1_$Origin ) == "Survey"] <- "Farmer fields"#Changing the name to be more specific
+
+  wm1_$Origin<- as.factor(wm1_$Origin)
+  
+#levels(wm1_$Origin) = c("" ,  "Farmer fields", "Fungicide field trials", "Baseline isolates") #, "White_mold_nursery", "Survey before fungicides lunched"  )#, "Farmer fields before fungicides lunched")
+
+
+#wm1_[(which(wm1_$Collection_ID %in% white_mold_nursery)), 6] <- "White_mold_nursery"
+
+#wm1_[(which(wm1_$Collection_ID %in% survey_before_fungicides_lunched)), 6] <- "Survey before fungicides lunched"
 
 #wm1_[(which(wm1_$Collection_ID %in% survey_before_fungicides_lunched)), 6] <- "before fungicides lunched"
 
-wm1__ <- wm1_ %>% select(Collection_ID, State, County, Country, Origin, Year, Fungicide_status, Host) %>% filter(Fungicide_status == "tested", Host== "drybeans") 
+wm1__ <- wm1_%>% select(Collection_ID, State, County, Country, Origin, Year, Fungicide_status, Host) %>% filter(Fungicide_status == "tested", Host== "drybeans") 
 q <- wm1__ %>%  group_by(State) %>% summarize(n=n())
 ccc <-  wm1__ %>%  group_by(State, Origin) %>% summarize(n=n())
  
 wm1___ <- wm1_ %>% select(Collection_ID, State, County, Country, Origin, Year, Fungicide_status, Host) %>% filter(Fungicide_status == "tested", Host== "soybeans") 
 qq <- wm1___ %>%  group_by(State, Origin) %>% summarize(n=n())
- wm1__ %>%  group_by(State, Origin) %>% summarize(n=n())
+aaaa <-  wm1___ %>%  group_by(State, Origin) %>% summarize(n=n())
 
 ```
 ###Cleaning and making some arrangemments from the inventory so far, run twice
