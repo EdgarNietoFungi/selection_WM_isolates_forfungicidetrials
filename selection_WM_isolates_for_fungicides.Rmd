@@ -38,10 +38,10 @@ WM$long <- (WM$long) * -1 # Transforming the long variable to the Hemispher West
 #WM$Collection_ID=="2215"
 WM$Year <- as.factor(WM$Year)# Changing the level of year to factor
 #the following markas an error that is why it was uncripted  
-#WM$Collection_ID <- as.numeric(WM$Collection_ID)# The goal is to change  the level of Collection to numeric, but for some reason, it should be by step by step. Changing the level of year to numeric in first approach 
+WM$Collection_ID <- as.numeric(WM$Collection_ID)# The goal is to change  the level of Collection to numeric, but for some reason, it should be by step by step. Changing the level of year to numeric in first approach 
   WM$Collection_ID <- as.character(WM$Collection_ID)#Changing the level of year to character as second approach
   levels(WM$Origin )[levels(WM$Origin ) == "trial"] <- "Fungicide field trials"#Changing the name to be more specific
-  levels(WM$Origin )[levels(WM$Origin ) == "Survey"] <- "Farmer fields"#Changing the name to be more specific
+  levels(WM$Origin  )[levels(WM$Origin ) == "Survey"] <- "Farmer fields"#Changing the name to be more specific
   levels(WM$DNA.Extraction )[levels(WM$DNA.Extraction ) == ""] <- "No DNA extraction"#Changing the name to be more specific
   levels(WM$DNA.Extraction )[levels(WM$DNA.Extraction ) == "No"] <- "No DNA extraction"#Changing the name to be more specific
   levels(WM$DNA.Extraction )[levels(WM$DNA.Extraction ) == "Yes"] <- "Yes DNA extraction"#Changing the names to be more specific
@@ -128,13 +128,13 @@ tested <-# #Fungicide pre-tested isolates from USA midwest including baselines a
     "1872",#mexican isolates
     "1884",#mexican isolates
     "1885",#mexican isolates
-    "54C",
-    "65B",
-    "51C",
-    "71B",
-    "64D",
-    "53B",
-    "60A",
+    "2453", #54c
+    "2528",#65B
+    "2449",#53b
+    "2505",# 71B
+    "2518", #64D
+    "2536", #53b
+  "2559",  #"60A",
     "698",
     "699",
     "710",
@@ -254,11 +254,55 @@ tested <-# #Fungicide pre-tested isolates from USA midwest including baselines a
     #  "2222"
   )
 mexican_isolates <- c("242","248","248a","248b","615":"632", "779","1857":"1940" )#All isolates from Mexico
-baseline_isolates <- c("1","118", "123", "12B", "129", "20", "21", "449", "461", "467", "475", "558", "564", "568", "581", "645", "800", "667", "74-SS-1", "8", "87")
+brazilian_isolates <- c("400","400a","400b","402","972",
+"973", 
+"973A",
+"973B",
+"973C",
+"973D",
+"973E",
+"974",
+"974A",
+"974B",
+"974C",
+"974D",
+"974E",
+"975",
+"975A",
+"975B",
+"975C",
+"975D",
+"975E",
+"976",
+"976A",
+"976B",
+"976C",
+"976D",
+"976E",
+"977",
+"977A",
+"977B",
+"977C",
+"977D",
+"977E",
+"978",
+"978A", 
+"978B", 
+"978C",
+"978D",
+"978E",
+"979",
+"979A",
+"979B",
+"979C",
+"979D",
+"979E", "1010":"1022","1227":"1254","2417":"2569" )#All isolates from Brazil
+baseline_isolates <- c("1","118", "123", "12B", "129", "20", "21", "449", "61", "467", "475", "558", "564", "568", "581", "645", "800", "667", "74-SS-1", "8", "87")
 white_mold_nursery <- c( "449", "461", "467", "475", "558", "564", "568", "581", "645", "800", "667")
 
-#survey_before_fungicides_lunched <- c("1","118", "123", "12B", "129", "20", "21",  "74-SS-1", "8", "87")
-
+survey_before_fungicides_lunched <- c("1","118", "123", "12B", "129", "20", "21",  "74-SS-1", "8", "87")
+ tested[duplicated(tested)]
+ tested <- tested[!duplicated(tested)]
 ```
 
 ##White Mold selection from USA midwest  
@@ -291,16 +335,16 @@ wm1_ <-  wm1 %>%
 
 wm1_$num_isolates_per_field <- as.factor(wm1_$num_isolates_per_field)#Converting as factor the levels of the new columns
 
-levels(wm1_$Origin) = c("", "Farmer fields", "Fungicide field trials", "White mold nursery")#, "Farmer fields before fungicides lunched")
+levels(wm1_$Origin) = c("", "Farmer fields", "Fungicide field trials", "Baseline isolates")#, "Farmer fields before fungicides lunched")
 
 
-wm1_[(which(wm1_$Collection_ID %in% white_mold_nursery)), 5] <- "White mold nursery"
+wm1_[(which(wm1_$Collection_ID %in% baseline_isolates)), 6] <- "Baseline isolates"
 
-#wm1_[(which(wm1_$Collection_ID %in% survey_before_fungicides_lunched)), 5] <- "Farmer fields before fungicides lunched"
+#wm1_[(which(wm1_$Collection_ID %in% survey_before_fungicides_lunched)), 6] <- "before fungicides lunched"
 
 wm1__ <- wm1_ %>% select(Collection_ID, State, County, Country, Origin, Year, Fungicide_status, Host) %>% filter(Fungicide_status == "tested", Host== "drybeans") 
 q <- wm1__ %>%  group_by(State) %>% summarize(n=n())
- wm1__ %>%  group_by(State, Origin) %>% summarize(n=n())
+ccc <-  wm1__ %>%  group_by(State, Origin) %>% summarize(n=n())
  
 wm1___ <- wm1_ %>% select(Collection_ID, State, County, Country, Origin, Year, Fungicide_status, Host) %>% filter(Fungicide_status == "tested", Host== "soybeans") 
 qq <- wm1___ %>%  group_by(State, Origin) %>% summarize(n=n())
