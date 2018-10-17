@@ -25,20 +25,47 @@ knitr::opts_chunk$set(echo = TRUE)
 ###Reading data 
 ```{r}
 ###
-WM <- read.csv("data/WM-fixingproductnamesID2416.csv", stringsAsFactors = TRUE)# Making the columns as factors
+WM <- read.csv("data/WM-fixingproductnamesID2416.csv", stringsAsFactors = FALSE)# Making the columns as factors
 #filtering 
 WM <-  WM %>% 
    filter(!Collection_ID== "429", !Collection_ID== "433", !Collection_ID== "442", !Collection_ID== "1048", !Collection_ID== "1049", !Collection_ID== "2217", !Collection_ID== "2219", !Collection_ID== "2226", !Collection_ID== "2245", !Collection_ID== "2307", !Collection_ID== "2327", !Collection_ID== "2352", !Collection_ID== "2366", !Collection_ID== "2367", !Collection_ID== "2380", !Collection_ID== "2392"  )
 #WM<- WM[-c(1055,419,423, 432),]# Taking out this row that is in blank
-WM$long <- as.numeric(as.character(WM$long))# Transforming long variables to numeric
+WM$long <- as.numeric(WM$long)# Transforming long variables to numeric
 #WM<- WM[-1293, ]
 WM$long <- (WM$long) * -1 # Transforming the long variable to the Hemispher West side
 
 
 #WM$Collection_ID=="2215"
-WM$Year <- as.factor(WM$Year)# Changing the level of year to factor
+WM$Year <- as.factor(WM$Year)
+WM$Host <- as.factor(WM$Host)
+WM$State <- as.factor(WM$State)
+WM$County <- as.factor(WM$County)
+WM$Country <- as.factor(WM$Country)
+WM$Field <- as.factor(WM$Field)
+WM$Form.ID <- as.factor(WM$Form.ID)
+WM$Serial_agar_dilution_for_creating_the_model_..N.20. <- as.factor(WM$Serial_agar_dilution_for_creating_the_model_..N.20.)
+WM$Origin<- as.factor(WM$Origin)
+WM$hyphal_tip..ht. <- as.factor(WM$hyphal_tip..ht.)
+WM$DNA.Extraction <- as.factor(WM$DNA.Extraction)
+WM$Size.of.field..acres. <- as.factor(WM$Size.of.field..acres.)
+WM$Percentage.Affected <- as.factor(WM$Percentage.Affected)
+WM$History <- as.factor(WM$History)
+WM$Number.of.Years <- as.factor(WM$Number.of.Years)
+WM$Fungicide.This.Year <- as.factor(WM$Fungicide.This.Year)
+WM$Chemigation <- as.factor(WM$Chemigation)
+WM$Applied.for.White.Mold <- as.factor(WM$Applied.for.White.Mold)
+WM$Products <- as.factor(WM$Products)
+WM$Timing <- as.factor(WM$Timing)
+WM$Pre.2015.Fungicides <- as.factor(WM$Pre.2015.Fungicides)
+WM$Number.of.Years.1 <- as.factor(WM$Number.of.Years.1)
+WM$Products_Soybean <- as.factor(WM$Products_Soybean)
+WM$Timing..Soybean <- as.factor(WM$Timing..Soybean)
+WM$Notes <- as.factor(WM$Notes)
+WM$Apparently.low.sensitiviy<- as.factor(WM$Apparently.low.sensitiviy)
+
+# Changing the level of year to factor
 #the following markas an error that is why it was uncripted  
-WM$Collection_ID <- as.character(as.numeric(WM$Collection_ID))# The goal is to change  the level of Collection to numeric, but for some reason, it should be by step by step. Changing the level of year to numeric in first approach 
+# The goal is to change  the level of Collection to numeric, but for some reason, it should be by step by step. Changing the level of year to numeric in first approach 
  # WM$Collection_ID <- as.character(WM$Collection_ID)#Changing the level of year to character as second approach
   levels(WM$Origin )[levels(WM$Origin ) == "trial"] <- "Fungicide field trials"#Changing the name to be more specific
   levels(WM$Origin  )[levels(WM$Origin ) == "Survey"] <- "Farmer fields"#Changing the name to be more specific
