@@ -38,8 +38,8 @@ WM$long <- (WM$long) * -1 # Transforming the long variable to the Hemispher West
 #WM$Collection_ID=="2215"
 WM$Year <- as.factor(WM$Year)# Changing the level of year to factor
 #the following markas an error that is why it was uncripted  
-#WM$Collection_ID <- as.numeric(WM$Collection_ID)# The goal is to change  the level of Collection to numeric, but for some reason, it should be by step by step. Changing the level of year to numeric in first approach 
-  WM$Collection_ID <- as.character(WM$Collection_ID)#Changing the level of year to character as second approach
+WM$Collection_ID <- as.character(as.numeric(WM$Collection_ID))# The goal is to change  the level of Collection to numeric, but for some reason, it should be by step by step. Changing the level of year to numeric in first approach 
+ # WM$Collection_ID <- as.character(WM$Collection_ID)#Changing the level of year to character as second approach
   levels(WM$Origin )[levels(WM$Origin ) == "trial"] <- "Fungicide field trials"#Changing the name to be more specific
   levels(WM$Origin  )[levels(WM$Origin ) == "Survey"] <- "Farmer fields"#Changing the name to be more specific
   levels(WM$DNA.Extraction )[levels(WM$DNA.Extraction ) == ""] <- "No DNA extraction"#Changing the name to be more specific
