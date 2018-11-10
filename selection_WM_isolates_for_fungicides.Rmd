@@ -25,46 +25,46 @@ knitr::opts_chunk$set(echo = TRUE)
 ###Reading data 
 ```{r}
 ###
-WM <- read.csv("data/WM-fixingproductnamesID2416.csv", stringsAsFactors = FALSE)# Making the columns as 
-WM$Collection_ID <- str_squish(WM$Collection_ID)
+WM <- read.csv("data/WM-fixingproductnamesID2573_modifiedwithmolecules.csv", stringsAsFactors = TRUE)# Making the columns as 
+WM$Collection_ID <- str_squish(WM$Collection_ID)# reading with the symbols that this column has
 #factors
-#filtering 
+#filtering  because in blank on with question mark in the inventory
 WM <-  WM %>% 
    filter(!Collection_ID== "429", !Collection_ID== "433", !Collection_ID== "442", !Collection_ID== "1048", !Collection_ID== "1049", !Collection_ID== "2217", !Collection_ID== "2219", !Collection_ID== "2226", !Collection_ID== "2245", !Collection_ID== "2307", !Collection_ID== "2327", !Collection_ID== "2352", !Collection_ID== "2366", !Collection_ID== "2367", !Collection_ID== "2380", !Collection_ID== "2392"  )
 #WM<- WM[-c(1055,419,423, 432),]# Taking out this row that is in blank
-WM$long <- as.numeric(WM$long)# Transforming long variables to numeric
+WM$long <- as.numeric  (as.character(WM$long))# Transforming long variables to numeric
 #WM<- WM[-1293, ]
 WM$long <- (WM$long) * -1 # Transforming the long variable to the Hemispher West side
 
 
 #WM$Collection_ID=="2215"
 WM$Year <- as.factor(WM$Year)
-WM$Host <- as.factor(WM$Host)
-WM$State <- as.factor(WM$State)
-WM$County <- as.factor(WM$County)
-WM$Country <- as.factor(WM$Country)
-WM$Field <- as.factor(WM$Field)
-WM$Form.ID <- as.factor(WM$Form.ID)
-WM$Serial_agar_dilution_for_creating_the_model_..N.20. <- as.factor(WM$Serial_agar_dilution_for_creating_the_model_..N.20.)
-#WM$Origin<- as.factor(WM$Origin)
-WM$hyphal_tip..ht. <- as.factor(WM$hyphal_tip..ht.)
-WM$DNA.Extraction <- as.factor(WM$DNA.Extraction)
-WM$Size.of.field..acres. <- as.factor(WM$Size.of.field..acres.)
-WM$Percentage.Affected <- as.factor(WM$Percentage.Affected)
-WM$History <- as.factor(WM$History)
-WM$Number.of.Years <- as.factor(WM$Number.of.Years)
-WM$Fungicide.This.Year <- as.factor(WM$Fungicide.This.Year)
-WM$Chemigation <- as.factor(WM$Chemigation)
-WM$Applied.for.White.Mold <- as.factor(WM$Applied.for.White.Mold)
-WM$Products <- as.factor(WM$Products)
-WM$Timing <- as.factor(WM$Timing)
-WM$Pre.2015.Fungicides <- as.factor(WM$Pre.2015.Fungicides)
-WM$Number.of.Years.1 <- as.factor(WM$Number.of.Years.1)
-WM$Products_Soybean <- as.factor(WM$Products_Soybean)
-WM$Timing..Soybean <- as.factor(WM$Timing..Soybean)
-WM$Notes <- as.factor(WM$Notes)
-WM$Apparently.low.sensitiviy<- as.factor(WM$Apparently.low.sensitiviy)
-
+# WM$Host <- as.factor(WM$Host)
+# WM$State <- as.factor(WM$State)
+# WM$County <- as.factor(WM$County)
+# WM$Country <- as.factor(WM$Country)
+# WM$Field <- as.factor(WM$Field)
+# WM$Form.ID <- as.factor(WM$Form.ID)
+# WM$Serial_agar_dilution_for_creating_the_model_..N.20. <- as.factor(WM$Serial_agar_dilution_for_creating_the_model_..N.20.)
+# #WM$Origin<- as.factor(WM$Origin)
+# WM$hyphal_tip..ht. <- as.factor(WM$hyphal_tip..ht.)
+# WM$DNA.Extraction <- as.factor(WM$DNA.Extraction)
+# WM$Size.of.field..acres. <- as.factor(WM$Size.of.field..acres.)
+# WM$Percentage.Affected <- as.factor(WM$Percentage.Affected)
+# WM$History <- as.factor(WM$History)
+# WM$Number.of.Years <- as.factor(WM$Number.of.Years)
+# WM$Fungicide.This.Year <- as.factor(WM$Fungicide.This.Year)
+# WM$Chemigation <- as.factor(WM$Chemigation)
+# WM$Applied.for.White.Mold <- as.factor(WM$Applied.for.White.Mold)
+# WM$Products <- as.factor(WM$Products)
+# WM$Timing <- as.factor(WM$Timing)
+# WM$Pre.2015.Fungicides <- as.factor(WM$Pre.2015.Fungicides)
+# WM$Number.of.Years.1 <- as.factor(WM$Number.of.Years.1)
+# WM$Products_Soybean <- as.factor(WM$Products_Soybean)
+# WM$Timing..Soybean <- as.factor(WM$Timing..Soybean)
+# WM$Notes <- as.factor(WM$Notes)
+# WM$Apparently.low.sensitiviy<- as.factor(WM$Apparently.low.sensitiviy)
+# 
 # Changing the level of year to factor
 #the following markas an error that is why it was uncripted  
 # The goal is to change  the level of Collection to numeric, but for some reason, it should be by step by step. Changing the level of year to numeric in first approach 
@@ -336,6 +336,57 @@ survey_before_fungicides_lunched <- c("1","118", "123", "12B", "129", "20", "21"
 
 ##White Mold selection from USA midwest  
 ###Data wrangling
+
+```{r}
+# WM2 <- WM %>% select(Collection_ID, Fungicide_current_season, molecule.s._current_season, active.ingredient_current_season, Fungicide_previous_seasons, molecule.s._previous_seasons, active.ingredient_previous_seasons)
+
+# levels(WM2$Fungicide_current_season)[levels(WM2$Fungicide_current_season) == "No_info"] <- "unknown"
+# 
+# levels(WM2$molecule.s._current_season)[levels(WM2$molecule.s._current_season) == ""] <- "unknown"
+# 
+# levels(WM2$active.ingredient_current_season)[levels(WM2$active.ingredient_current_season) == ""] <- "unknown"
+# 
+# levels(WM2$Fungicide_previous_seasons)[levels(WM2$Fungicide_previous_seasons) == ""] <- "unknown"
+# 
+# levels(WM2$molecule.s._previous_seasons)[levels(WM2$molecule.s._previous_seasons) == ""] <- "unknown"
+# 
+# levels(WM2$active.ingredient_previous_seasons)[levels(WM2$active.ingredient_previous_seasons) == ""] <- "unknown"
+
+
+# Group_1 <- c("thiophanate_methyl")
+# Group_3 <- c("thiophanate_methyl", "prothioconazole", "tetraconazole", "flutriafol", "propiconazole", "tebuconazole")
+# Group_7 <- c("fluxapyroxad", "boscalid")
+# Group_11 <- c("picoxystrobin", "azoxystrobin", "fluoxastrobin", "pyraclostrobin", "trifloxystrobin")
+# Group_M_05 <- c("chlorothalonil")
+# not_considered_group <- c("potassium phosphite")
+
+
+# WM3 <- WM2 %>% select(Collection_ID, active.ingredient_current_season, active.ingredient_previous_seasons)
+# selection <- WM3  %>%
+#   mutate(
+#     Group_MOA_current_season = case_when(
+#       active.ingredient_current_season %in% Group_1 ~ "Group_1",# filtering and naming "selected"" in case of in
+#       active.ingredient_current_season %in% Group_3~ "Group_3",
+#       active.ingredient_current_season %in% Group_7 ~ "Group_7",
+#       active.ingredient_current_season %in% Group_11 ~ "Group_11",
+#       active.ingredient_current_season %in% Group_M_05 ~ "Group_M_05",
+#       active.ingredient_current_season %in% not_considered_group~ "not_considered_group",
+  #     TRUE ~ "unknown"# in case of not, naming "not_selected""
+  #   )
+  # )   %>%
+  # mutate(
+  #   Group_MOA_previous_seasons = case_when(
+  #     active.ingredient_previous_seasons %in% Group_1 ~ "Group_1",# filtering and naming "selected"" in case of in
+  #     active.ingredient_previous_seasons %in% Group_3~ "Group_3",
+  #     active.ingredient_previous_seasons %in% Group_7 ~ "Group_7",
+  #     active.ingredient_previous_seasons %in% Group_11 ~ "Group_11",
+  #     active.ingredient_previous_seasons %in% Group_M_05 ~ "Group_M_05",
+  #     active.ingredient_previous_seasons %in% not_considered_group~ "not_considered_group",
+  #     TRUE ~ "unknown"# in case of not, naming "not_selected""
+  #   )
+  # )  
+```
+
 ```{r}
   wm1 <-
   WM %>% select(
@@ -352,8 +403,8 @@ survey_before_fungicides_lunched <- c("1","118", "123", "12B", "129", "20", "21"
     County,
     Country,
     Serial_agar_dilution_for_creating_the_model_..N.20.,
-    Form.ID 
-      )# Selecting 16 the most important columns so far
+    Form.ID, Fungicide_current_season, molecule.s._current_season, active.ingredient_current_season, Fungicide_previous_seasons, molecule.s._previous_seasons, active.ingredient_previous_seasons
+      )# Selecting  the most important columns so far
 
 wm1_ <-  wm1 %>%
   mutate(Fungicide_status = ifelse(Collection_ID  %in% tested,
@@ -364,11 +415,14 @@ wm1_ <-  wm1 %>%
 
 wm1_$num_isolates_per_field <- as.factor(wm1_$num_isolates_per_field)#Converting as factor the levels of the new columns
 
-wm1_[(which(wm1_$Collection_ID %in% baseline_isolates)), 6] <- "Baseline isolates"
-
+levels(wm1_$Origin) = c("" ,  "Farmer fields", "Fungicide field trials", "Baseline isolates")
 
 levels(wm1_$Origin )[levels(wm1_$Origin ) == "trial"] <- "Fungicide field trials"#Changing the name to be more specific
   levels(wm1_$Origin  )[levels(wm1_$Origin ) == "Survey"] <- "Farmer fields"#Changing the name to be more specific
+
+  wm1_[(which(wm1_$Collection_ID %in% baseline_isolates)), 6] <- "Baseline isolates"
+
+#wm1_$Collection_ID[which(wm1_$Collection_ID %in% baseline_isolates)] <- "Baseline isolates"
 
   wm1_$Origin<- as.factor(wm1_$Origin)
   
@@ -381,13 +435,59 @@ levels(wm1_$Origin )[levels(wm1_$Origin ) == "trial"] <- "Fungicide field trials
 
 #wm1_[(which(wm1_$Collection_ID %in% survey_before_fungicides_lunched)), 6] <- "before fungicides lunched"
 
-wm1__ <- wm1_%>% select(Collection_ID, State, County, Country, Origin, Year, Fungicide_status, Host) %>% filter(Fungicide_status == "tested", Host== "drybeans") 
-q <- wm1__ %>%  group_by(State) %>% summarize(n=n())
-ccc <-  wm1__ %>%  group_by(State, Origin) %>% summarize(n=n())
+levels(wm1_$Fungicide_current_season)[levels(wm1_$Fungicide_current_season) == "No_info"] <- "unknown"
+
+levels(wm1_$molecule.s._current_season)[levels(wm1_$molecule.s._current_season) == ""] <- "unknown"
+
+levels(wm1_$active.ingredient_current_season)[levels(wm1_$active.ingredient_current_season) == ""] <- "unknown"
+
+levels(wm1_$Fungicide_previous_seasons)[levels(wm1_$Fungicide_previous_seasons) == ""] <- "unknown"
+
+levels(wm1_$molecule.s._previous_seasons)[levels(wm1_$molecule.s._previous_seasons) == ""] <- "unknown"
+
+levels(wm1_$active.ingredient_previous_seasons)[levels(wm1_$active.ingredient_previous_seasons) == ""] <- "unknown"
+  
+Group_1 <- c("thiophanate_methyl")
+Group_3 <- c("thiophanate_methyl", "prothioconazole", "tetraconazole", "flutriafol", "propiconazole", "tebuconazole")
+Group_7 <- c("fluxapyroxad", "boscalid")
+Group_11 <- c("picoxystrobin", "azoxystrobin", "fluoxastrobin", "pyraclostrobin", "trifloxystrobin")
+Group_M_05 <- c("chlorothalonil")
+not_considered_group <- c("potassium phosphite")
+
+wm1_ <- wm1_  %>%
+  mutate(
+    Group_MOA_current_season = case_when(
+      active.ingredient_current_season %in% Group_1 ~ "Group_1",# filtering and naming "the name of the group" in case of in
+      active.ingredient_current_season %in% Group_3~ "Group_3",
+      active.ingredient_current_season %in% Group_7 ~ "Group_7",
+      active.ingredient_current_season %in% Group_11 ~ "Group_11",
+      active.ingredient_current_season %in% Group_M_05 ~ "Group_M_05",
+      active.ingredient_current_season %in% not_considered_group~ "not_considered_group",
+      TRUE ~ "unknown"# in case of not, naming "not_selected""
+    )
+  )   %>%
+  mutate(
+    Group_MOA_previous_seasons = case_when(
+      active.ingredient_previous_seasons %in% Group_1 ~ "Group_1",# filtering and naming "the name of the group" in case of in
+      active.ingredient_previous_seasons %in% Group_3~ "Group_3",
+      active.ingredient_previous_seasons %in% Group_7 ~ "Group_7",
+      active.ingredient_previous_seasons %in% Group_11 ~ "Group_11",
+      active.ingredient_previous_seasons %in% Group_M_05 ~ "Group_M_05",
+      active.ingredient_previous_seasons %in% not_considered_group~ "not_considered_group",
+      TRUE ~ "unknown"# in case of not, naming "not_selected""
+    )
+  )  
+
+wm1_$Group_MOA_current_season <- as.factor(wm1_$Group_MOA_current_season)
+wm1_$Group_MOA_previous_seasons <- as.factor(wm1_$Group_MOA_previous_seasons)
+
+drybeans_tested <- wm1_%>% select(Collection_ID, State, County, Country, Origin, Year, Fungicide_status, Host, Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter(Fungicide_status == "tested", Host== "drybeans") %>% group_by(State, Origin, Group_MOA_current_season, Group_MOA_previous_seasons) %>% summarize(n=n())
+#q <- drybeans_tested %>%  group_by(State) %>% summarize(n=n())
+
  
-wm1___ <- wm1_ %>% select(Collection_ID, State, County, Country, Origin, Year, Fungicide_status, Host) %>% filter(Fungicide_status == "tested", Host== "soybeans") 
-qq <- wm1___ %>%  group_by(State, Origin) %>% summarize(n=n())
-aaaa <-  wm1___ %>%  group_by(State, Origin) %>% summarize(n=n())
+soybeans_tested <- wm1_ %>% select(Collection_ID, State, County, Country, Origin, Year, Fungicide_status, Host, Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter(Fungicide_status == "tested", Host== "soybeans") %>%  group_by(State, Origin, Group_MOA_current_season, Group_MOA_previous_seasons) %>% summarize(n=n())
+
+# qq <- soybeans_tested %>%  group_by(State, Origin) %>% summarize(n=n())
 
 ```
 ###Cleaning and making some arrangemments from the inventory so far, run twice
@@ -399,6 +499,371 @@ aaaa <-  wm1___ %>%  group_by(State, Origin) %>% summarize(n=n())
 ```
 ##White Mold selection from USA midwest  and MExico 
 ###Data wrangling
+
+```{r}
+selection_nice <- wm1_ %>%
+  ungroup() %>%
+  filter(
+  Field == "po" |
+  Field == "lan" |
+  Field == "na" |
+  Field == "han" |
+  Field == "mon" |
+  Field == "ini" | Field == "ley" | Field == "75" | Field == "hi"
+  ) %>%
+  filter(
+  !Collection_ID == "1029",
+  !Collection_ID == "1087",
+  !Collection_ID == "1135",
+  !Collection_ID == "1345",
+  !Collection_ID == "1541",
+  !Collection_ID == "1692",
+  !Collection_ID == "1713",
+  !Collection_ID == "1732",
+  !Collection_ID == "1872",
+  !Collection_ID == "1884",
+  !Collection_ID == "2131",
+  !Collection_ID == "2020"
+  ) %>% group_by(Field) %>%
+  sample_n(9, replace = F)
+  # takingout those fields selected  
+selection_chingon <- wm1_  %>%
+  ungroup() %>%
+  filter(
+  !Field == "po" ,
+  !Field == "lan" ,
+  !Field == "na" ,
+  !Field == "han" ,
+  !Field == "mon" ,
+  !Field == "ini" , 
+  !  Field == "ley" , 
+  !  Field == "75" , 
+   !Field == "hi"
+  ) 
+#selecting the unique fields
+#write_csv(dat_long_lat, "fields_WMNCSRP.csv")
+#[-c(,6,12,13,65,67:70,72:78,80:87, 89:97,100:108,110),]
+ #dat_long_lat <-  dat_long_lat[-598,]
+
+#Subset by give specific fungicide
+
+
+fields_WMNCSRP_Group_1 <-selection_chingon %>% 
+  select(State, County, Field, long, lat, Group_MOA_current_season) %>%  filter(Group_MOA_current_season == "Group_1") %>% 
+  distinct()
+  
+ fields_WMNCSRP_Group_3 <-selection_chingon %>% 
+  select(State, County, Field, long, lat, Group_MOA_current_season) %>%  filter(Group_MOA_current_season == "Group_3") %>% 
+  distinct() 
+  
+ 
+ fields_WMNCSRP_Group_7 <-selection_chingon %>% 
+  select(State, County, Field, long, lat, Group_MOA_current_season) %>%  filter(Group_MOA_current_season == "Group_7") %>% 
+  distinct() 
+ 
+ fields_WMNCSRP_Group_11 <-selection_chingon %>% 
+  select(State, County, Field, long, lat, Group_MOA_current_season) %>%  filter(Group_MOA_current_season == "Group_11") %>% 
+  distinct() 
+ 
+ fields_WMNCSRP_unknown <-selection_chingon %>% 
+  select(State, County, Field, long, lat, Group_MOA_current_season) %>%  filter(Group_MOA_current_season == "unknown") %>% 
+  distinct() 
+ 
+#a <- fields_WMNCSRP[-c(3,6,12,13,38, 65,67:70,72:78,80:87, 89:97,100:108,110),]
+#a <- fields_WMNCSRP[-c(1:205, 279, 317:343),]
+
+ a <- fields_WMNCSRP_unknown[-c(1:205, 246, 265:291),]
+#[-c(3,6,12,13,38, 65,67:70,72:78,80:87, 89:97,100:108,110),]
+#a<- read.csv("fields_WMNCSRP.csv")
+
+#a <- a[-34,]# because there are two "48" in Boone county
+# COnvert to sf object
+b_Group_1 <- st_as_sf(fields_WMNCSRP_Group_1, coords = c("long", "lat"))
+b_Group_3 <- st_as_sf(fields_WMNCSRP_Group_3, coords = c("long", "lat"))
+b_Group_7 <- st_as_sf(fields_WMNCSRP_Group_7, coords = c("long", "lat"))
+b_Group_11 <- st_as_sf(fields_WMNCSRP_Group_11, coords = c("long", "lat"))
+
+b_Group_unknown <- st_as_sf(a, coords = c("long", "lat"))
+#is Set the projection as ESPG 4326 (long_lat)
+
+st_crs(b_Group_1) <- 4326
+st_crs(b_Group_3) <- 4326
+st_crs(b_Group_7) <- 4326
+st_crs(b_Group_11) <- 4326
+st_crs(b_Group_unknown) <- 4326
+# Apply the st_distance function
+
+dist_m_Group_1 <- st_distance(b_Group_1)# euclidian distance
+dist_m_Group_3 <- st_distance(b_Group_3)# euclidian distance
+dist_m_Group_7 <- st_distance(b_Group_7)# euclidian distance
+dist_m_Group_11 <- st_distance(b_Group_11)# euclidian distance
+dist_m_Group_unknown <- st_distance(b_Group_unknown)# euclidian distance
+
+
+
+
+# Combine with df
+
+dist_matrix_Group_1 <- b_Group_1%>% 
+
+  mutate("hol" = as.numeric(dist_m_Group_1[, 1]), 
+                       "mad" = as.numeric(dist_m_Group_1[, 2]),
+                       "madi" = as.numeric(dist_m_Group_1[, 3]),
+                       "ant" = as.numeric(dist_m_Group_1[, 4]),
+                       "ante" = as.numeric(dist_m_Group_1[, 5]),
+      "wau" = as.numeric(dist_m_Group_1[, 6])   
+         )
+
+dist_matrix_Group_3  <- b_Group_3%>%
+mutate("dod" = as.numeric(dist_m_Group_3[, 1]),
+"do" = as.numeric(dist_m_Group_3[, 2]),
+"holt" = as.numeric(dist_m_Group_3[, 3]),
+"hol" = as.numeric(dist_m_Group_3[, 4]),
+"8" = as.numeric(dist_m_Group_3[, 5]),
+"19" = as.numeric(dist_m_Group_3[, 6]),
+"20" = as.numeric(dist_m_Group_3[, 7]),
+"34" = as.numeric(dist_m_Group_3[, 8]),
+"45" = as.numeric(dist_m_Group_3[, 9]),
+"46" = as.numeric(dist_m_Group_3[, 10]),
+"48" = as.numeric(dist_m_Group_3[, 11]),
+"48" = as.numeric(dist_m_Group_3[, 12]),
+"66" = as.numeric(dist_m_Group_3[, 13]),
+"67" = as.numeric(dist_m_Group_3[, 14]),
+"78" = as.numeric(dist_m_Group_3[, 15]),
+"97" = as.numeric(dist_m_Group_3[, 16]),
+"98" = as.numeric(dist_m_Group_3[, 17]),
+"101"= as.numeric(dist_m_Group_3[, 18]),
+"be" = as.numeric(dist_m_Group_3[, 19]),
+"bee" = as.numeric(dist_m_Group_3[, 20]),
+"beee" = as.numeric(dist_m_Group_3[, 21]),
+"beee" = as.numeric(dist_m_Group_3[, 22]))
+
+
+dist_matrix_Group_7  <- b_Group_7%>%
+mutate("ant" = as.numeric(dist_m_Group_7[, 1]),
+"6" = as.numeric(dist_m_Group_7[, 2]),
+"18" = as.numeric(dist_m_Group_7[, 3]),
+"21" = as.numeric(dist_m_Group_7[, 4]),
+"24" = as.numeric(dist_m_Group_7[, 5]),
+"25" = as.numeric(dist_m_Group_7[, 6]),
+"62" = as.numeric(dist_m_Group_7[, 7]),
+"69" = as.numeric(dist_m_Group_7[, 8]),
+"99" = as.numeric(dist_m_Group_7[, 9]),
+"100" = as.numeric(dist_m_Group_7[, 10]),
+"mont" = as.numeric(dist_m_Group_7[, 11]),
+"wau" = as.numeric(dist_m_Group_7[, 12]))
+
+
+dist_matrix_Group_11  <- b_Group_11%>%
+mutate("dod" = as.numeric(dist_m_Group_11[, 1]),
+"do" = as.numeric(dist_m_Group_11[, 2]),
+"ant" = as.numeric(dist_m_Group_11[, 3]),
+"6" = as.numeric(dist_m_Group_11[, 4]),
+"8" = as.numeric(dist_m_Group_11[, 5]),
+"18" = as.numeric(dist_m_Group_11[, 6]),
+"21" = as.numeric(dist_m_Group_11[, 7]),
+"24" = as.numeric(dist_m_Group_11[, 8]),
+"25" = as.numeric(dist_m_Group_11[, 9]),
+"62" = as.numeric(dist_m_Group_11[, 10]),
+"66" = as.numeric(dist_m_Group_11[, 11]),
+"69" = as.numeric(dist_m_Group_11[, 12]),
+"78" = as.numeric(dist_m_Group_11[, 13]),
+"99" = as.numeric(dist_m_Group_11[, 14]),
+"100" = as.numeric(dist_m_Group_11[, 15]),
+"mont" = as.numeric(dist_m_Group_11[, 16]),
+"be" = as.numeric(dist_m_Group_11[, 17]),
+"bee"= as.numeric(dist_m_Group_11[, 18]),
+"beee" = as.numeric(dist_m_Group_11[, 19]),
+"beeee" = as.numeric(dist_m_Group_11[, 20]),
+"ta" = as.numeric(dist_m_Group_11[, 21]),
+"taa" = as.numeric(dist_m_Group_11[, 22]),
+"taaa" = as.numeric(dist_m_Group_11[, 23]),
+"taaaa" = as.numeric(dist_m_Group_11[, 24]),
+"taaaaa" = as.numeric(dist_m_Group_11[, 25]),
+"taaaaaa" = as.numeric(dist_m_Group_11[, 26]),
+"taaaaaaa" = as.numeric(dist_m_Group_11[, 27]),
+"taaaaaaaa" = as.numeric(dist_m_Group_11[, 28]),
+"taaaaaaaaa" = as.numeric(dist_m_Group_11[, 29]),
+"wau" = as.numeric(dist_m_Group_11[, 30]),
+"co" = as.numeric(dist_m_Group_11[, 31]),
+"cern" = as.numeric(dist_m_Group_11[, 32]),
+"cer" = as.numeric(dist_m_Group_11[, 33]))
+
+       
+
+
+
+dist_matrix_Group_unknown <- b_Group_unknown%>%
+mutate("flo" = as.numeric(dist_m_Group_unknown[, 1]),
+"ho" = as.numeric(dist_m_Group_unknown[, 2]),
+"h" = as.numeric(dist_m_Group_unknown[, 3]),
+"an" = as.numeric(dist_m_Group_unknown[, 4]),
+"va" = as.numeric(dist_m_Group_unknown[, 5]),
+"sa" = as.numeric(dist_m_Group_unknown[, 6]),
+"cu" = as.numeric(dist_m_Group_unknown[, 7]),
+"hol" = as.numeric(dist_m_Group_unknown[, 8]),
+"arr" = as.numeric(dist_m_Group_unknown[, 9]),
+"pre" = as.numeric(dist_m_Group_unknown[, 10]),
+"ru" = as.numeric(dist_m_Group_unknown[, 11]),
+"ca" = as.numeric(dist_m_Group_unknown[, 12]),
+"st" = as.numeric(dist_m_Group_unknown[, 13]),
+"9" = as.numeric(dist_m_Group_unknown[, 14]),
+"22" = as.numeric(dist_m_Group_unknown[, 15]),
+"23" = as.numeric(dist_m_Group_unknown[, 16]),
+"35" = as.numeric(dist_m_Group_unknown[, 17]),
+"47"= as.numeric(dist_m_Group_unknown[, 18]),
+"60" = as.numeric(dist_m_Group_unknown[, 19]),
+"68" = as.numeric(dist_m_Group_unknown[, 20]),
+"104" = as.numeric(dist_m_Group_unknown[, 21]),
+"10" = as.numeric(dist_m_Group_unknown[, 22]),
+"Al" = as.numeric(dist_m_Group_unknown[, 23]),
+"Hi" = as.numeric(dist_m_Group_unknown[, 24]),
+"In" = as.numeric(dist_m_Group_unknown[, 25]),
+"Sand" = as.numeric(dist_m_Group_unknown[, 26]),
+"Sani" = as.numeric(dist_m_Group_unknown[, 27]),
+"st" = as.numeric(dist_m_Group_unknown[, 28]),
+"howard" = as.numeric(dist_m_Group_unknown[, 29]),
+"chi" = as.numeric(dist_m_Group_unknown[, 30]),
+"flo" = as.numeric(dist_m_Group_unknown[, 31]),
+"floyd" = as.numeric(dist_m_Group_unknown[, 32]),
+"st" = as.numeric(dist_m_Group_unknown[, 33]),
+"sto" = as.numeric(dist_m_Group_unknown[, 34]),
+"stoo" = as.numeric(dist_m_Group_unknown[, 35]),
+"stooo" = as.numeric(dist_m_Group_unknown[, 36]),
+"stoooo" = as.numeric(dist_m_Group_unknown[, 37]),
+"sh" = as.numeric(dist_m_Group_unknown[, 38]),
+"shh" = as.numeric(dist_m_Group_unknown[, 39]),
+"shhh" = as.numeric(dist_m_Group_unknown[, 40]),
+"shhhh" = as.numeric(dist_m_Group_unknown[, 41]),
+"shhhhh" = as.numeric(dist_m_Group_unknown[, 42]),
+"shhhhhh" = as.numeric(dist_m_Group_unknown[, 43]),
+"shhhhhhh" = as.numeric(dist_m_Group_unknown[, 44]),
+"shhhhhhhh" = as.numeric(dist_m_Group_unknown[, 45]),
+"wau" = as.numeric(dist_m_Group_unknown[, 46]),
+"la" = as.numeric(dist_m_Group_unknown[, 47]),
+"laa" = as.numeric(dist_m_Group_unknown[, 48]),
+"laaa" = as.numeric(dist_m_Group_unknown[, 49]),
+"laaaa" = as.numeric(dist_m_Group_unknown[, 50]),
+"laaaaa" = as.numeric(dist_m_Group_unknown[, 51]),
+"laaaaaa" = as.numeric(dist_m_Group_unknown[, 52]),
+"laaaaaaa" = as.numeric(dist_m_Group_unknown[, 53]),
+"laaaaaaaa" = as.numeric(dist_m_Group_unknown[, 54]),
+"laaaaaaaaa" = as.numeric(dist_m_Group_unknown[, 55]),
+"laaaaaaaaaa" = as.numeric(dist_m_Group_unknown[, 56 ]),
+"co" = as.numeric(dist_m_Group_unknown[, 57]),
+"cer" = as.numeric(dist_m_Group_unknown[, 58]))
+
+
+# dist_matrix <- b %>% 
+#   mutate("flo" = as.numeric(dist_m[, 1]), 
+#                        "ho" = as.numeric(dist_m[, 2]),
+#                        "an" = as.numeric(dist_m[, 3]),
+#                        "dod" = as.numeric(dist_m[, 4]),
+#                        "va" = as.numeric(dist_m[, 5]),
+#                        "sa" = as.numeric(dist_m[, 6]),
+#                        "cu" = as.numeric(dist_m[, 7]),
+#                        "ant" = as.numeric(dist_m[, 8]),
+#                        "hold" = as.numeric(dist_m[, 9]),
+#                        "arr" = as.numeric(dist_m[, 10]),
+#                        "pre" = as.numeric(dist_m[, 11]),
+#                        "ru" = as.numeric(dist_m[, 12]),
+#                        "ca" = as.numeric(dist_m[, 13]),
+#                        "st" = as.numeric(dist_m[, 14]),
+#                        "6" = as.numeric(dist_m[, 15]),
+#                        "8" = as.numeric(dist_m[, 16]),
+#                        "9" = as.numeric(dist_m[, 17]),
+#                        "10" = as.numeric(dist_m[, 18]),
+#                        "11" = as.numeric(dist_m[, 19]),
+#                        "18" = as.numeric(dist_m[, 20]),
+#                        "19" = as.numeric(dist_m[, 21]),
+#                        "20" = as.numeric(dist_m[, 22]),
+#                        "21" = as.numeric(dist_m[, 23]),
+#                        "22" = as.numeric(dist_m[, 24]),
+#                        "23" = as.numeric(dist_m[, 25]),
+#                        "24" = as.numeric(dist_m[, 26]),
+#                        "25" = as.numeric(dist_m[, 27]),
+#                        "34" = as.numeric(dist_m[, 28]),
+#                        "35" = as.numeric(dist_m[, 29]),
+#                        "45" = as.numeric(dist_m[, 30]),
+#                        "46" = as.numeric(dist_m[, 31]),
+#                        "47" = as.numeric(dist_m[, 32]),
+#                        "48" = as.numeric(dist_m[, 33]),
+#                        "60" = as.numeric(dist_m[, 34]),
+#                        "62" = as.numeric(dist_m[, 35]),
+#                        "66" = as.numeric(dist_m[, 36]),
+#                        "67" = as.numeric(dist_m[, 37]),
+#                        "68" = as.numeric(dist_m[, 38]),
+#                        "69" = as.numeric(dist_m[, 39]),
+#                        "78" = as.numeric(dist_m[, 40]),
+#                        "97" = as.numeric(dist_m[, 41]),
+#                        "98" = as.numeric(dist_m[, 42]),
+#                        "99" = as.numeric(dist_m[, 43]),
+#                        "100" = as.numeric(dist_m[, 44]),
+#                        "101" = as.numeric(dist_m[, 45]),
+#                        "102" = as.numeric(dist_m[, 46]),
+#                        "103" = as.numeric(dist_m[, 47]),
+#                        "104" = as.numeric(dist_m[, 48]),
+#                        "10" = as.numeric(dist_m[, 49]),
+#                        "Al" = as.numeric(dist_m[, 50]),
+#                        "Hi" = as.numeric(dist_m[, 51]),
+#                        "ln" = as.numeric(dist_m[, 52]),
+#                        "mont" = as.numeric(dist_m[, 53]),
+#                        "Sand" = as.numeric(dist_m[, 54]),
+#                        "Sani" = as.numeric(dist_m[, 55]),
+#                        "st" = as.numeric(dist_m[, 56]),
+#                        "howard" = as.numeric(dist_m[, 57]),
+#                        "chi" = as.numeric(dist_m[, 58]),
+#                        "floyd" = as.numeric(dist_m[, 59]),
+#                        "sto" = as.numeric(dist_m[, 60]),
+#                        "sh" = as.numeric(dist_m[, 61]),
+#                        "be" = as.numeric(dist_m[, 62]),
+#                        "ta" = as.numeric(dist_m[, 63]),
+#                        "wau" = as.numeric(dist_m[, 64]),
+#                        "la" = as.numeric(dist_m[, 65]),
+#                        "co" = as.numeric(dist_m[, 66]),
+#                        "cern" = as.numeric(dist_m[, 67]),
+#                        "cer" = as.numeric(dist_m[, 68]))
+# Replace 0 with NA
+#selecting the unique fields
+#write_csv(dat_long_lat, "fields_WMNCSRP.csv")
+#[-c(2,6,12,13,65,67:70,72:78,80:87, 89:97,100:108,110),]
+ #dat_long_lat <-  dat_long_lat[-598,]
+
+
+dist_matrix[dist_matrix == 0] <- NA              
+# object to hierarchially cluster 
+
+hc_Group_1 <- hclust(as.dist(dist_m_Group_1), method="complete")
+hc_Group_3 <- hclust(as.dist(dist_m_Group_3), method="complete")
+hc_Group_7 <- hclust(as.dist(dist_m_Group_7), method="complete")
+hc_Group_11 <- hclust(as.dist(dist_m_Group_11), method="complete")
+hc_Group_unknown <- hclust(as.dist(dist_m_Group_unknown), method="complete")
+
+
+
+hc <- hclust(as.dist(dist_m), method="complete")
+
+# 50 km of distance for each one
+d <- 50000
+
+dist_matrix_Group_1$cluster <- cutree(hc_Group_1, h=d)
+dist_matrix_Group_3$cluster <- cutree(hc_Group_3, h=d)
+dist_matrix_Group_7$cluster <- cutree(hc_Group_7, h=d)
+dist_matrix_Group_11$cluster <- cutree(hc_Group_11, h=d)
+dist_matrix_Group_unknown$cluster <- cutree(hc_Group_unknown, h=d)
+
+
+
+
+dist_matrix$cluster <- cutree(hc, h=d)
+
+
+
+#plot(dist_matrix$cluster)
+
+
+```
+
 ```{r}
 #install.packages("geosphere")
 #library(geosphere)
@@ -472,7 +937,9 @@ selection_chingon <- wm2_  %>%
 fields_WMNCSRP <-selection_chingon %>% 
   select(State, County, Field, long, lat) %>% 
   distinct()
-a <- fields_WMNCSRP[-c(3,6,12,13,38, 65,67:70,72:78,80:87, 89:97,100:108,110),]
+#a <- fields_WMNCSRP[-c(3,6,12,13,38, 65,67:70,72:78,80:87, 89:97,100:108,110),]
+a <- fields_WMNCSRP[-c(1:205, 279, 317:343),]
+
 #[-c(3,6,12,13,38, 65,67:70,72:78,80:87, 89:97,100:108,110),]
 #a<- read.csv("fields_WMNCSRP.csv")
 
