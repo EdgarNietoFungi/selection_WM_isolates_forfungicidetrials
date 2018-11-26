@@ -25,7 +25,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ###Reading data 
 ```{r}
 ###
-WM <- read.csv("data/WM-fixingproductnamesID2573_modifiedwithmolecules.csv", stringsAsFactors = TRUE)# Making the columns as 
+WM <- read.csv("data/WM-fixingproductnamesID2573_modifyingforactiveingredient_2.csv", stringsAsFactors = TRUE)# Making the columns as 
 WM$Collection_ID <- str_squish(WM$Collection_ID)# reading with the symbols that this column has
 #factors
 #filtering  because in blank on with question mark in the inventory
@@ -332,13 +332,21 @@ white_mold_nursery <- c( "449", "461", "467", "475", "558", "564", "568", "581",
 survey_before_fungicides_lunched <- c("1","118", "123", "12B", "129", "20", "21",  "74-SS-1", "8", "87")
  tested[duplicated(tested)]
  tested <- tested[!duplicated(tested)]
- 
-Group_1 <- c("thiophanate_methyl")
-Group_3 <- c("thiophanate_methyl", "prothioconazole", "tetraconazole", "flutriafol", "propiconazole", "tebuconazole")
+ unknown <- c("No_info")
+Group_one <- c("thiophanate_methyl")
+Group_3 <- c( "prothioconazole", "tetraconazole", "flutriafol", "propiconazole", "tebuconazole")
 Group_7 <- c("fluxapyroxad", "boscalid")
 Group_11 <- c("picoxystrobin", "azoxystrobin", "fluoxastrobin", "pyraclostrobin", "trifloxystrobin")
 Group_M_05 <- c("chlorothalonil")
 not_considered_group <- c("potassium phosphite")
+Group_3_Group_7 <- c( "flutriafol + fluoxastrobin", "propiconazole + azoxystrobin", "prothioconazole + trifloxystrobin") 
+         
+ Group_3_Group_11 <-  c("tetraconazole + pyraclostrobin", "propiconazole + azoxystrobin","prothioconazole + trifloxystrobin", "tetraconazole + fluatriafol + fluxastrobin")     
+Group_7_Group_11 <- c( "fluxapyroxad + pyraclostrobin", "pyraclostrobin + fluxapyroxad + pyraclostrobin")                       
+                     
+ Group_3_not_considered_group <- "tebuconazole + potassium phosphite"
+ 
+ Group_11_Group_M_05 <- c("azoxystrobin + chlorothalonil")
 ```
 
 ##White Mold selection from USA midwest  
@@ -395,7 +403,7 @@ not_considered_group <- c("potassium phosphite")
 ```
 
 
-```{r}
+```{r `}
   wm1 <-
   WM %>% select(
     Collection_ID,
@@ -411,7 +419,7 @@ not_considered_group <- c("potassium phosphite")
     County,
     Country,
     Serial_agar_dilution_for_creating_the_model_..N.20.,
-    Form.ID, Fungicide_current_season, molecule.s._current_season, active.ingredient_current_season, Fungicide_previous_seasons, molecule.s._previous_seasons, active.ingredient_previous_seasons
+    Form.ID, Fungicide_current_season, molecule.s._current_season,  Fungicide_previous_seasons, molecule.s._previous_seasons#, active.ingredient_previous_seasons
       )# Selecting  the most important columns so far
 
 wm1_ <-  wm1 %>%
@@ -448,44 +456,57 @@ levels(wm1_$Fungicide_current_season)[levels(wm1_$Fungicide_current_season) == "
 
 levels(wm1_$molecule.s._current_season)[levels(wm1_$molecule.s._current_season) == ""] <- "unknown"
 
-levels(wm1_$active.ingredient_current_season)[levels(wm1_$active.ingredient_current_season) == ""] <- "unknown"
+#levels(wm1_$active.ingredient_current_season)[levels(wm1_$active.ingredient_current_season) == ""] <- "unknown"
 
 levels(wm1_$Fungicide_previous_seasons)[levels(wm1_$Fungicide_previous_seasons) == ""] <- "unknown"
 
 levels(wm1_$molecule.s._previous_seasons)[levels(wm1_$molecule.s._previous_seasons) == ""] <- "unknown"
 
-levels(wm1_$active.ingredient_previous_seasons)[levels(wm1_$active.ingredient_previous_seasons) == ""] <- "unknown"
+#levels(wm1_$active.ingredient_previous_seasons)[levels(wm1_$active.ingredient_previous_seasons) == ""] <- "unknown"
   
-Group_1 <- c("thiophanate_methyl")
-Group_3 <- c("thiophanate_methyl", "prothioconazole", "tetraconazole", "flutriafol", "propiconazole", "tebuconazole")
-Group_7 <- c("fluxapyroxad", "boscalid")
-Group_11 <- c("picoxystrobin", "azoxystrobin", "fluoxastrobin", "pyraclostrobin", "trifloxystrobin")
-Group_M_05 <- c("chlorothalonil")
-not_considered_group <- c("potassium phosphite")
+# Group_1 <- c("thiophanate_methyl")
+# Group_3 <- c("thiophanate_methyl", "prothioconazole", "tetraconazole", "flutriafol", "propiconazole", "tebuconazole")
+# Group_7 <- c("fluxapyroxad", "boscalid")
+# Group_11 <- c("picoxystrobin", "azoxystrobin", "fluoxastrobin", "pyraclostrobin", "trifloxystrobin")
+# Group_M_05 <- c("chlorothalonil")
+# not_considered_group <- c("potassium phosphite")
 
 wm1_ <- wm1_  %>%
   mutate(
     Group_MOA_current_season = case_when(
-      active.ingredient_current_season %in% Group_1 ~ "Group_1",# filtering and naming "the name of the group" in case of in
-      active.ingredient_current_season %in% Group_3~ "Group_3",
-      active.ingredient_current_season %in% Group_7 ~ "Group_7",
-      active.ingredient_current_season %in% Group_11 ~ "Group_11",
-      active.ingredient_current_season %in% Group_M_05 ~ "Group_M_05",
-      active.ingredient_current_season %in% not_considered_group~ "not_considered_group",
-      TRUE ~ "unknown"# in case of not, naming "not_selected""
+       molecule.s._current_season%in% Group_one ~ "Group_one",# filtering and naming "the name of the group" in case of in
+       molecule.s._current_season%in% Group_3~ "Group_3",
+       molecule.s._current_season%in% Group_7 ~ "Group_7",
+       molecule.s._current_season%in% Group_11 ~ "Group_11",
+       molecule.s._current_season%in% Group_M_05 ~ "Group_M_05",
+       molecule.s._current_season%in% Group_3_Group_7~ "Group_3&Group_7",
+       molecule.s._current_season%in% Group_3_Group_11~ "Group_3&Group_11",
+       molecule.s._current_season%in% Group_7_Group_11~ "Group_7&Group_11",
+       molecule.s._current_season%in% Group_3_not_considered_group~ "Group_3&not_considered_group",
+       molecule.s._current_season%in% Group_11_Group_M_05~ "Group_11&Group_M_05",
+       molecule.s._current_season%in% unknown~ "unknown",
+             TRUE ~ "unknown"# in case of not, naming "not_selected""
     )
   )   %>%
   mutate(
     Group_MOA_previous_seasons = case_when(
-      active.ingredient_previous_seasons %in% Group_1 ~ "Group_1",# filtering and naming "the name of the group" in case of in
-      active.ingredient_previous_seasons %in% Group_3~ "Group_3",
-      active.ingredient_previous_seasons %in% Group_7 ~ "Group_7",
-      active.ingredient_previous_seasons %in% Group_11 ~ "Group_11",
-      active.ingredient_previous_seasons %in% Group_M_05 ~ "Group_M_05",
-      active.ingredient_previous_seasons %in% not_considered_group~ "not_considered_group",
+       molecule.s._previous_seasons%in% Group_one ~ "Group_one",# filtering and naming "the name of the group" in case of in
+       molecule.s._previous_seasons%in% Group_3~ "Group_3",
+       molecule.s._previous_seasons%in% Group_7 ~ "Group_7",
+       molecule.s._previous_seasons%in% Group_11 ~ "Group_11",
+       molecule.s._previous_seasons%in% Group_M_05 ~ "Group_M_05",
+       molecule.s._previous_seasons%in% Group_3_Group_7~ "Group_3&Group_7",
+       molecule.s._previous_seasons%in% Group_3_Group_11~ "Group_3&Group_11",
+       molecule.s._previous_seasons%in% Group_7_Group_11~ "Group_7&Group_11",
+       molecule.s._previous_seasons%in% Group_3_not_considered_group~ "Group_3&not_considered_group",
+       molecule.s._previous_seasons%in% Group_11_Group_M_05~ "Group_11&Group_M_05",
+       molecule.s._previous_seasons%in% unknown~ "unknown",
+  
+
       TRUE ~ "unknown"# in case of not, naming "not_selected""
     )
   )  
+
 
 wm1_$Group_MOA_current_season <- as.factor(wm1_$Group_MOA_current_season)
 wm1_$Group_MOA_previous_seasons <- as.factor(wm1_$Group_MOA_previous_seasons)
@@ -500,6 +521,52 @@ soybeans_tested <- wm1_ %>% select(Collection_ID, State, County, Country, Origin
 
 ```
 
+```{r}
+
+mask <- grep("Group_11", wm1_$Group_MOA_previous_seasons)
+#wm1_[mask,] %>% summary()
+wm2 <- wm1_[mask,] 
+summary(wm2)
+wm2$Field <- as.factor( as.character(wm2$Field))
+wm2 <- wm2 %>% group_by(Field) %>% mutate (num_isolates_per_field = ifelse(n() > 9, ">9isolates/Field", "<9isolates/Field")) %>% filter(num_isolates_per_field ==">9isolates/Field") 
+maskk <- grep("Group_11", wm2$Group_MOA_current_season)
+wm2 <- wm2[maskk,]
+wm2$Field <- as.factor( as.character(wm2$Field))
+#fields "100" "18"  "6"   "62"  "99"
+
+
+mask2 <- grep("Group_one", wm1_$Group_MOA_previous_seasons)
+#wm1_[mask,] %>% summary()
+wm3 <- wm1_[mask2,] 
+summary(wm3)
+
+mask3 <- grep("Group_3", wm1_$Group_MOA_previous_seasons)
+#wm1_[mask,] %>% summary()
+wm4 <- wm1_[mask3,] 
+summary(wm4)
+wm4$Field <- as.factor( as.character(wm4$Field))
+
+wm4 <- wm4 %>% group_by(Field) %>% mutate (num_isolates_per_field = ifelse(n() > 9, ">9isolates/Field", "<9isolates/Field")) %>% filter(num_isolates_per_field ==">9isolates/Field") 
+maskkk <- grep("Group_3", wm4$Group_MOA_current_season)
+wm4 <- wm4[maskkk,]
+wm4$Field <- as.factor( as.character(wm4$Field))
+#fields "78" "97"
+
+
+
+mask4 <- grep("Group_7", wm1_$Group_MOA_previous_seasons)
+#wm1_[mask,] %>% summary()
+wm5 <- wm1_[mask4,] 
+summary(wm5)
+wm5$Field <- as.factor( as.character(wm5$Field))
+
+wm5 <- wm5 %>% group_by(Field) %>% mutate (num_isolates_per_field = ifelse(n() > 9, ">9isolates/Field", "<9isolates/Field")) %>% filter(num_isolates_per_field ==">9isolates/Field") 
+maskkkk <- grep("Group_7", wm5$Group_MOA_current_season)
+wm5 <- wm5[maskkkk,]
+wm5$Field <- as.factor( as.character(wm5$Field))
+#fields "100" "18"  "6"   "78"  "99" 
+
+```
 
 ```{r}
 #Selecting those that in both seasons are repeated by Group
