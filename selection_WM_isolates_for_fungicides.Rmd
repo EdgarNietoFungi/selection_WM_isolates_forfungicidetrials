@@ -17,6 +17,8 @@ library(mapdata)
 library(geosphere)
 library(sf)
 library(lwgeom)
+library(knitr)
+library(kableExtra)
 knitr::opts_chunk$set(echo = TRUE)
 # graph names of the body means "number isolates/field" 
 # graph names of powdery mildews means "Year"
@@ -347,6 +349,7 @@ Group_7_Group_11 <- c( "fluxapyroxad + pyraclostrobin", "pyraclostrobin + fluxap
  Group_3_not_considered_group <- "tebuconazole + potassium phosphite"
  
  Group_11_Group_M_05 <- c("azoxystrobin + chlorothalonil")
+ #Baseline_isolates <- c("No_Applied")
 ```
 
 ##White Mold selection from USA midwest  
@@ -505,13 +508,14 @@ wm1_ <- wm1_  %>%
 
       TRUE ~ "unknown"# in case of not, naming "not_selected""
     )
-  )  
-
+  )   
+            
+            
 
 wm1_$Group_MOA_current_season <- as.factor(wm1_$Group_MOA_current_season)
 wm1_$Group_MOA_previous_seasons <- as.factor(wm1_$Group_MOA_previous_seasons)
 
-drybeans_tested <- wm1_%>% select(Collection_ID, State, County, Country, Origin, Year, Fungicide_status, Host, Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter(Fungicide_status == "tested", Host== "drybeans") %>% group_by(State, Origin, Group_MOA_current_season, Group_MOA_previous_seasons) %>% summarize(n=n())
+drybeans_tested <- wm1_%>% select(Collection_ID, State, County, Country, Origin, Year, Fungicide_status, Host, Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter(Fungicide_status == "tested", Host== "drybeans") %>% group_by(Host, State, Origin,Year, Group_MOA_current_season,  Group_MOA_previous_seasons) %>% summarize(n=n()) %>%kable(digits = 2)
 #q <- drybeans_tested %>%  group_by(State) %>% summarize(n=n())
 
  
@@ -521,24 +525,36 @@ soybeans_tested <- wm1_ %>% select(Collection_ID, State, County, Country, Origin
 
 ```
 
-```{r}
 
+```{r}
 mask <- grep("Group_11", wm1_$Group_MOA_previous_seasons)
 #wm1_[mask,] %>% summary()
 wm2 <- wm1_[mask,] 
 summary(wm2)
 wm2$Field <- as.factor( as.character(wm2$Field))
-wm2 <- wm2 %>% group_by(Field) %>% mutate (num_isolates_per_field = ifelse(n() > 9, ">9isolates/Field", "<9isolates/Field")) %>% filter(num_isolates_per_field ==">9isolates/Field") 
+
+wm2 %>% group_by(Field) %>% summarize (num_isolates_per_field = n()) %>% arrange(desc(num_isolates_per_field)) %>% slice(1:13)
+
+wm2 <- wm2 %>% group_by(Field)  %>% filter(n() > 9)
+  levels(droplevels(wm2$Field))
+summary(wm2)  
+
 maskk <- grep("Group_11", wm2$Group_MOA_current_season)
 wm2 <- wm2[maskk,]
-wm2$Field <- as.factor( as.character(wm2$Field))
+#wm2$Field <- as.factor( as.character(wm2$Field))
+levels(droplevels(wm2$Field))
 #fields "100" "18"  "6"   "62"  "99"
-
+# For # 6 it does not mention any product used with corn so not sure if it was previously maize
+#for# 18 it was previously maize cus it mentions a product for this
+#for# 62 it was previously maize cus it mentions a product for this
+# For # 99 it does not mention any product used with corn so not sure if it was previously maize
+# For # 100 it does not mention any product used with corn so not sure if it was previously maize
 
 mask2 <- grep("Group_one", wm1_$Group_MOA_previous_seasons)
 #wm1_[mask,] %>% summary()
 wm3 <- wm1_[mask2,] 
 summary(wm3)
+
 
 mask3 <- grep("Group_3", wm1_$Group_MOA_previous_seasons)
 #wm1_[mask,] %>% summary()
@@ -546,12 +562,17 @@ wm4 <- wm1_[mask3,]
 summary(wm4)
 wm4$Field <- as.factor( as.character(wm4$Field))
 
-wm4 <- wm4 %>% group_by(Field) %>% mutate (num_isolates_per_field = ifelse(n() > 9, ">9isolates/Field", "<9isolates/Field")) %>% filter(num_isolates_per_field ==">9isolates/Field") 
+wm4 %>% group_by(Field) %>% summarize (num_isolates_per_field = n()) %>% arrange(desc(num_isolates_per_field)) %>% slice(1:3)
+wm4 <- wm4 %>% group_by(Field)  %>% filter(n() > 9)
 maskkk <- grep("Group_3", wm4$Group_MOA_current_season)
 wm4 <- wm4[maskkk,]
 wm4$Field <- as.factor( as.character(wm4$Field))
-#fields "78" "97"
+levels(droplevels(wm4$Field))
+#fields  "78", "97"
 
+# For # 78 it does not mention any product used with corn so not sure if it was previously maize
+
+#for# 97 it was previously maize cus it mentions a product for this
 
 
 mask4 <- grep("Group_7", wm1_$Group_MOA_previous_seasons)
@@ -560,13 +581,87 @@ wm5 <- wm1_[mask4,]
 summary(wm5)
 wm5$Field <- as.factor( as.character(wm5$Field))
 
-wm5 <- wm5 %>% group_by(Field) %>% mutate (num_isolates_per_field = ifelse(n() > 9, ">9isolates/Field", "<9isolates/Field")) %>% filter(num_isolates_per_field ==">9isolates/Field") 
+wm5 %>% group_by(Field) %>% summarize (num_isolates_per_field = n()) %>% arrange(desc(num_isolates_per_field)) %>% slice(1:9)
+wm5 <- wm5 %>% group_by(Field)  %>% filter(n() > 9)
 maskkkk <- grep("Group_7", wm5$Group_MOA_current_season)
 wm5 <- wm5[maskkkk,]
 wm5$Field <- as.factor( as.character(wm5$Field))
+levels(droplevels(wm5$Field))
 #fields "100" "18"  "6"   "78"  "99" 
 
+#for# 18 it was previously maize cus it mentions a product for this
+# For # 6 it does not mention any product used with corn so not sure if it was previously maize
+
+# For # 78 it does not mention any product used with corn so not sure if it was previously maize
+
+
+# For # 99 it does not mention any product used with corn so not sure if it was previously maize
+# For # 100 it does not mention any product used with corn so not sure if it was previously maize
+
 ```
+```{r}
+#taking into account the mixes in previous season but  not on current season
+mask <- grep("Group_11", wm1_$Group_MOA_previous_seasons)
+#wm1_[mask,] %>% summary()
+wm2 <- wm1_[mask,] 
+#picking current season with no mixxes
+summary(wm2)
+
+mask2 <- grep("Group_one", wm1_$Group_MOA_previous_seasons)
+#wm1_[mask,] %>% summary()
+wm3 <- wm1_[mask2,] 
+#picking current season with no mixxes
+summary(wm3)
+
+mask3 <- grep("Group_3", wm1_$Group_MOA_previous_seasons)
+#wm1_[mask,] %>% summary()
+wm4 <- wm1_[mask3,] 
+#picking current season with no mixxes
+summary(wm4)
+
+mask4 <- grep("Group_7", wm1_$Group_MOA_previous_seasons)
+#wm1_[mask,] %>% summary()
+wm5 <- wm1_[mask4,] 
+#picking current season with no mixxes
+summary(wm5)
+```
+
+```{r}
+#taking into account the mixes in current season but  not on previous seasons
+mask <- grep("Group_11", wm1_$Group_MOA_current_season)
+#wm1_[mask,] %>% summary()
+wm2 <- wm1_[mask,] 
+#picking previous seasons with no mixxes
+summary(wm2)
+
+mask2 <- grep("Group_one", wm1_$Group_MOA_current_season)
+#wm1_[mask,] %>% summary()
+wm3 <- wm1_[mask2,] 
+#picking previous seasons with no mixxes
+summary(wm3)
+
+mask3 <- grep("Group_3", wm1_$Group_MOA_current_season)
+#wm1_[mask,] %>% summary()
+wm4 <- wm1_[mask3,] 
+#picking previous seasons with no mixxes
+summary(wm4)
+
+mask4 <- grep("Group_7", wm1_$Group_MOA_current_season)
+#wm1_[mask,] %>% summary()
+wm5 <- wm1_[mask4,] 
+#picking previous seasons with no mixxes
+summary(wm5)
+
+```
+
+For both cases 
+```{r}
+summary(wm1_ %>% filter(Group_MOA_previous_seasons== "Group_one"))
+summary(wm1_ %>% filter(Group_MOA_previous_seasons== "Group_3"))
+summary(wm1_ %>% filter(Group_MOA_previous_seasons== "Group_7"))
+summary(wm1_ %>% filter(Group_MOA_previous_seasons== "Group_11"))
+```
+
 
 ```{r}
 #Selecting those that in both seasons are repeated by Group
@@ -582,6 +677,37 @@ wm3 <- wm1_[mask2,]
 # In this case Group 11 & 7
 ```
 
+Hypothsis 2, not group repeated in previous season
+```{r}
+mask <- grep("Group_11", wm1_$Group_MOA_current_season)
+#wm1_[mask,] %>% summary()
+wm2 <- wm1_[mask,] 
+wm2 <- wm2 %>% group_by(Field)  %>% filter(n() > 9)
+wm2 <- wm2 %>% ungroup() %>% filter(Group_MOA_previous_seasons == "unknown")
+
+levels(droplevels(wm2$Field))
+#"69"   "ant"  "cer"  "dod"  "han"  "lan"  "mon"  "mont"
+#"na" 
+
+# For # 69 it does not mention any product used with corn so not sure if it was previously maize
+ # For the rest not information
+
+
+maskkkkkkk <- grep("Group_7", wm1_$Group_MOA_current_season)
+#wm1_[mask,] %>% summary()
+wm2 <- wm1_[maskkkkkkk,] 
+wm2 <- wm2 %>% group_by(Field)  %>% filter(n() > 9)
+wm2 <- wm2 %>% ungroup() %>% filter(Group_MOA_previous_seasons == "unknown" | Group_MOA_previous_seasons == "Group_11")
+
+levels(droplevels(wm2$Field))
+
+#[1] "62"   "69"   "ant"  "han"  "lan"  "mon"  "mont"
+#[8] "na"
+
+#for# 62 it was previously maize cus it mentions a product for this
+# For # 69 it does not mention any product used with corn so not sure if it was previously maize
+
+```
 
 ###Cleaning and making some arrangemments from the inventory so far, run twice
 ```{r, warning= FALSE}
