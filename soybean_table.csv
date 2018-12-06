@@ -1,0 +1,30 @@
+Host,State,Origin,Year,Group_MOA_current_season,Group_MOA_previous_seasons,N_isolates
+soybeans,IA,Farmer fields,2015,Group_3&Group_7,unknown,1
+soybeans,IA,Fungicide field trials,2016,Group_11,unknown,2
+soybeans,IA,Fungicide field trials,2016,Group_3&Group_7,unknown,1
+soybeans,IA,Fungicide field trials,2016,Group_7&Group_11,unknown,2
+soybeans,IA,Fungicide field trials,2016,Group_one,unknown,1
+soybeans,IA,Fungicide field trials,2017,Group_11,unknown,3
+soybeans,IA,Fungicide field trials,2017,Group_7,unknown,4
+soybeans,IA,Fungicide field trials,2017,Group_one,unknown,3
+soybeans,IA,Fungicide field trials,2017,unknown,unknown,1
+soybeans,MI,Farmer fields,2015,unknown,unknown,4
+soybeans,MI,Fungicide field trials,2016,Group_11,unknown,3
+soybeans,MI,Fungicide field trials,2016,Group_7,unknown,3
+soybeans,MI,Fungicide field trials,2016,Group_one,unknown,3
+soybeans,MI,Fungicide field trials,2016,unknown,unknown,1
+soybeans,MI,Fungicide field trials,2017,Group_11,unknown,4
+soybeans,MI,Fungicide field trials,2017,Group_7,unknown,3
+soybeans,MI,Fungicide field trials,2017,Group_one,unknown,4
+soybeans,NE,Farmer fields,2015,Group_3&Group_7,Group_3&Group_7,3
+soybeans,NE,Farmer fields,2015,Group_7&Group_11,Group_11,3
+soybeans,SIN,Farmer fields,2016,unknown,unknown,4
+soybeans,WI,Fungicide field trials,2015,Group_11,unknown,3
+soybeans,WI,Fungicide field trials,2015,Group_7,unknown,1
+soybeans,WI,Fungicide field trials,2015,Group_one,unknown,3
+soybeans,WI,Fungicide field trials,2015,unknown,unknown,1
+soybeans,WI,Fungicide field trials,2017,Group_11,unknown,1
+soybeans,WI,Fungicide field trials,2017,Group_7,unknown,2
+soybeans,WI,Fungicide field trials,2017,Group_one,unknown,1
+soybeans,WI,Fungicide field trials,2017,unknown,unknown,1
+total,,,,,,66

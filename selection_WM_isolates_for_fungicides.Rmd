@@ -515,13 +515,85 @@ wm1_ <- wm1_  %>%
 wm1_$Group_MOA_current_season <- as.factor(wm1_$Group_MOA_current_season)
 wm1_$Group_MOA_previous_seasons <- as.factor(wm1_$Group_MOA_previous_seasons)
 
-drybeans_tested <- wm1_%>% select(Collection_ID, State, County, Country, Origin, Year, Fungicide_status, Host, Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter(Fungicide_status == "tested", Host== "drybeans") %>% group_by(Host, State, Origin,Year, Group_MOA_current_season,  Group_MOA_previous_seasons) %>% summarize(n=n()) %>%kable(digits = 2)
+drybeans_tested <- wm1_%>% select(Collection_ID, State, County, Country, Origin, Year, Fungicide_status, Host, Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter(Fungicide_status == "tested", Host== "drybeans") %>% group_by(Host, State, Origin,Year, Group_MOA_current_season,  Group_MOA_previous_seasons) 
+  
+  levels(drybeans_tested$Group_MOA_current_season)
+  levels(drybeans_tested$Group_MOA_previous_seasons)
+#rm(drybeans_tested)
+   
+
+
+
+
+
+levels(drybeans_tested$Group_MOA_current_season) = c("Group_11" , "Group_11&Group_M_05", "Group_3", "Group_3&Group_11", "Group_3&Group_7", "Group_3&not_considered_group", "Group_7", "Group_7&Group_11","Group_one", "unknown", "No_fungicide_applied" )
+
+levels(drybeans_tested$Group_MOA_previous_seasons) = c("Group_11" ,  "Group_3", "Group_3&Group_11",  "Group_3&Group_7", "Group_7&Group_11", "Group_one", "unknown", "No_fungicide_applied")
+
+drybeans_tested$Group_MOA_current_season[drybeans_tested$Origin%in% c("Baseline isolates")] <- "No_fungicide_applied"
+drybeans_tested$Group_MOA_previous_seasons[drybeans_tested$Origin%in% c("Baseline isolates")] <- "No_fungicide_applied"
+
+
+
+
+
+
+drybeans_tested <- drybeans_tested%>% group_by(Host, State, Origin, Year, Group_MOA_current_season,  Group_MOA_previous_seasons) %>%  summarize(N_isolates=n()) %>% kable(format = "markdown") %>%  kable_styling()
+#write_csv(drybeans_tested, "drybeans_table.csv")
+write2pdf(drybeans_tested, "drybeans_testedT.pdf", quiet = TRUE)
+pdf("drybeans_tested.pdf", 7 , 5)
+drybeans_tested
+dev.off()
 #q <- drybeans_tested %>%  group_by(State) %>% summarize(n=n())
 
  
-soybeans_tested <- wm1_ %>% select(Collection_ID, State, County, Country, Origin, Year, Fungicide_status, Host, Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter(Fungicide_status == "tested", Host== "soybeans") %>%  group_by(State, Origin, Group_MOA_current_season, Group_MOA_previous_seasons) %>% summarize(n=n())
+soybeans_tested <- wm1_ %>% select(Collection_ID, State, County, Country, Origin, Year, Fungicide_status, Host, Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter(Fungicide_status == "tested", Host== "soybeans") %>%  group_by(State, Origin, Group_MOA_current_season, Group_MOA_previous_seasons) 
 
-# qq <- soybeans_tested %>%  group_by(State, Origin) %>% summarize(n=n())
+levels(droplevels(soybeans_tested$Group_MOA_current_season))
+levels(soybeans_tested$Group_MOA_current_season)
+levels(soybeans_tested$Group_MOA_previous_seasons)
+
+
+levels(soybeans_tested$Group_MOA_current_season) = c("Group_11" ,"Group_11&Group_M_05",  "Group_3",  "Group_3&Group_11", "Group_3&Group_7", "Group_3&not_considered_group", "Group_7",  "Group_7&Group_11", "Group_one", "unknown", "No_fungicide_applied" )
+soybeans_tested$Group_MOA_current_season[soybeans_tested$Origin%in% c("Baseline isolates")] <-  "No_fungicide_applied"
+
+
+levels(soybeans_tested$Group_MOA_previous_seasons) = c("Group_11" ,  "Group_3", "Group_3&Group_11", "Group_3&Group_7", "Group_7&Group_11", "Group_one", "unknown", "No_fungicide_applied")
+
+soybeans_tested$Group_MOA_previous_seasons[soybeans_tested$Origin%in% c("Baseline isolates")] <- "No_fungicide_applied"
+
+soybeans_tested <- soybeans_tested%>% group_by(Host, State, Origin, Year, Group_MOA_current_season,  Group_MOA_previous_seasons) %>%  summarize(N_isolates=n(), sum(N_isolates)) %>% kable() %>%  kable_styling()
+#write_csv(soybeans_tested, "soybean_table.csv")
+soybeans_tested
+  save(drybeans_tested, soybeans_tested, file = "data/Summary_table.rda")
+
+# soybeans_tested %>%
+#   kable() %>%
+#   kable_styling()
+# 
+# 
+# levels(droplevels(soybeans_tested$Group_MOA_current_season))
+# 
+# 
+# 
+# levels(drybeans_tested$Group_MOA_previous_seasons) = c("Group_11" ,  "Group_3", "Group_3&Group_11", "Group_3&Group_7", "Group_7&Group_11", "Group_one", "unknown", "No_fungicide_applied")
+# 
+# drybeans_tested$Group_MOA_current_season[drybeans_tested$Origin%in% c("Baseline isolates")] <- "No_fungicide_applied"
+# drybeans_tested$Group_MOA_previous_seasons[drybeans_tested$Origin%in% c("Baseline isolates")] <- "No_fungicide_applied"
+# 
+# 
+# 
+# drybeans_tested %>%
+#   kable() %>%
+#   kable_styling()
+# # qq <- soybeans_tested %>%  group_by(State, Origin) %>% summarize(n=n())
+# 
+# drybeans_tested %>%
+#   kable() %>%
+#   kable_styling()
+# 
+# #kable(drybeans_tested) %>%
+#   kable_styling((bootstrap_options = c("striped", "hover", "condensed")))
 
 ```
 

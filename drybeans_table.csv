@@ -1,0 +1,32 @@
+Host,State,Origin,Year,Group_MOA_current_season,Group_MOA_previous_seasons,N_isolates
+drybeans,CO,Farmer fields,2007,unknown,unknown,6
+drybeans,CO,Farmer fields,2010,unknown,unknown,7
+drybeans,CO ,Baseline isolates,1996,No_fungicide_applied,No_fungicide_applied,1
+drybeans,DE,Baseline isolates,2004,No_fungicide_applied,No_fungicide_applied,1
+drybeans,GO,Farmer fields,2010,unknown,unknown,2
+drybeans,ID,Baseline isolates,1974,No_fungicide_applied,No_fungicide_applied,1
+drybeans,MG,Farmer fields,2010,unknown,unknown,4
+drybeans,MG,Farmer fields,2011,unknown,unknown,1
+drybeans,MI,Farmer fields,2008,unknown,unknown,6
+drybeans,MI,Farmer fields,2009,unknown,unknown,4
+drybeans,MI,Baseline isolates,2003,No_fungicide_applied,No_fungicide_applied,1
+drybeans,MI,Baseline isolates,2005,No_fungicide_applied,No_fungicide_applied,1
+drybeans,MI,Baseline isolates,2008,No_fungicide_applied,No_fungicide_applied,1
+drybeans,MN,Baseline isolates,2004,No_fungicide_applied,No_fungicide_applied,1
+drybeans,ND,Farmer fields,2007,unknown,unknown,4
+drybeans,ND,Farmer fields,2010,unknown,unknown,13
+drybeans,NE,Farmer fields,1995,unknown,unknown,1
+drybeans,NE,Farmer fields,2007,unknown,unknown,3
+drybeans,NE,Farmer fields,2010,unknown,unknown,5
+drybeans,NE,Baseline isolates,1963,No_fungicide_applied,No_fungicide_applied,1
+drybeans,NE,Baseline isolates,1973,No_fungicide_applied,No_fungicide_applied,1
+drybeans,NE,Baseline isolates,1974,No_fungicide_applied,No_fungicide_applied,5
+drybeans,OR,Baseline isolates,2003,No_fungicide_applied,No_fungicide_applied,1
+drybeans,WA,Farmer fields,1996,unknown,unknown,1
+drybeans,WA,Farmer fields,2003,unknown,unknown,1
+drybeans,WA,Farmer fields,2004,unknown,unknown,2
+drybeans,WA,Farmer fields,2007,unknown,unknown,6
+drybeans,WA,Farmer fields,2008,unknown,unknown,2
+drybeans,WA,Baseline isolates,2004,No_fungicide_applied,No_fungicide_applied,2
+drybeans,WA,Baseline isolates,2005,No_fungicide_applied,No_fungicide_applied,1
+Total,,,,,,86
