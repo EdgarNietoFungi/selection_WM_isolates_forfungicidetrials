@@ -539,15 +539,7 @@ drybeans_tested$Group_MOA_previous_seasons[drybeans_tested$Origin%in% c("baselin
 
 
 
-
-
-drybeans_tested2 <- drybeans_tested%>% group_by( State,Country,  Origin,  Group_MOA_current_season,  Group_MOA_previous_seasons) %>%  summarize(N_isolates=n()) %>% arrange(desc(N_isolates)) kable() %>%  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = F, position = "center") 
-
-drybeans_tested2<- drybeans_tested%>% group_by( State,Country,  Origin,  Group_MOA_current_season,  Group_MOA_previous_seasons) %>%  summarize(N_isolates=n())%>% arrange(desc(N_isolates)) %>%ungroup() %>% add_row(State = "Total", N_isolates = sum(.$N_isolates)) %>% rename( "N isolates" = N_isolates, "MOA current season" = Group_MOA_current_season,  "MOA previous seasons" =Group_MOA_previous_seasons)%>% kable(format = "markdown") %>%  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = F, position = "center") %>%  write2pdf("hi4.pdf")# quiet = TRUE)
-
-
-
-drybeans_tested2<- drybeans_tested%>% group_by( State,Country,  Origin,  Group_MOA_current_season,  Group_MOA_previous_seasons) %>%  summarize(N_isolates=n())%>% arrange(desc(N_isolates)) %>%ungroup() %>% add_row(State = "Total", N_isolates = sum(.$N_isolates)) %>% rename( "N isolates" = N_isolates, "MOA current season" = Group_MOA_current_season,  "MOA previous seasons" =Group_MOA_previous_seasons)%>% kable(format = "markdown") %>%  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = F, position = "center") %>%  write2pdf("hi4.pdf")# quiet = TRUE)
+drybeans_tested2<- drybeans_tested%>% group_by( State,Country,  Origin,  Group_MOA_current_season,  Group_MOA_previous_seasons) %>%  summarize(N_isolates=n())%>% arrange(desc(N_isolates)) %>%ungroup() %>% add_row(State = "Total", N_isolates = sum(.$N_isolates)) %>% rename( "N isolates" = N_isolates, "MOA current season" = Group_MOA_current_season,  "MOA previous seasons" =Group_MOA_previous_seasons)%>% kable(format = "markdown") %>%  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = F, position = "center") %>%  write2pdf("drybean_isolates_pretest.pdf")# quiet = TRUE)
 
 
 
@@ -572,7 +564,8 @@ soybeans_tested$Group_MOA_previous_seasons[soybeans_tested$Origin%in% c("baselin
 
 
 
-soybeans_tested2<- soybeans_tested%>% group_by( State,Country,  Origin,  Group_MOA_current_season,  Group_MOA_previous_seasons) %>%  summarize(N_isolates=n())%>% arrange(desc(N_isolates)) %>%ungroup() %>% add_row(State = "Total", N_isolates = sum(.$N_isolates)) %>% rename( "N isolates" = N_isolates, "MOA current season" = Group_MOA_current_season,  "MOA previous seasons" =Group_MOA_previous_seasons)%>% kable(format = "markdown") %>%  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = F, position = "center") %>%  write2pdf("hi7.pdf")# quiet = TRUE)
+soybeans_tested2<- soybeans_tested%>% group_by( State,Country,  Origin,  Group_MOA_current_season,  Group_MOA_previous_seasons) %>%  summarize(N_isolates=n())%>% arrange(desc(N_isolates)) %>%ungroup() %>% mutate(Group_MOA_current_season = recode(Group_MOA_current_season, Group_11 = "Group 11" , Group_7= "Group 7", 'Group_3&Group_7'= "Group 3 & Group 7", 'Group_7&Group_11'= "Group 7 & Group 11", Group_one= "Group 1")) %>% mutate(Group_MOA_previous_seasons = recode(Group_MOA_previous_seasons,Group_11 = "Group 11", 'Group_3&Group_7'= "Group 3 & Group 7" ))%>% add_row(State = "Total", N_isolates = sum(.$N_isolates)) %>% rename( "N isolates" = N_isolates, "MOA current season" = Group_MOA_current_season,  "MOA previous seasons" =Group_MOA_previous_seasons)%>% kable(format = "markdown") %>%  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = F, position = "center") %>%  write2pdf("soybean_isolates_pretest.pdf")# quiet = TRUE)
+
 
 
 
