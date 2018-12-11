@@ -30,7 +30,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ###Reading data 
 ```{r}
 ###
-WM <- read.csv("data/WM-fixingproductnamesID2573_modifyingforactiveingredient_2.csv", stringsAsFactors = TRUE)# Making the columns as 
+WM <- read.csv("data/WM-fixingproductnamesID2573_modifyingforactiveingredient_3.csv", stringsAsFactors = TRUE)# Making the columns as 
 WM$Collection_ID <- str_squish(WM$Collection_ID)# reading with the symbols that this column has
 #factors
 #filtering  because in blank on with question mark in the inventory
@@ -436,7 +436,7 @@ Group_7_Group_11 <- c(
     County,
     Country,
     Serial_agar_dilution_for_creating_the_model_..N.20.,
-    Form.ID, Fungicide_current_season, molecule.s._current_season,  Fungicide_previous_seasons, molecule.s._previous_seasons#, active.ingredient_previous_seasons
+    Form.ID, Fungicide_current_season, molecule.s._current_season,  Fungicide_previous_seasons, molecule.s._previous_seasons, Applications, Rate#, active.ingredient_previous_seasons
       )# Selecting  the most important columns so far
 # Check this very well becuase it must include the ones used on Serial dilution and DC
 wm1_ <-  wm1 %>%
@@ -495,7 +495,7 @@ wm1_ <- wm1_  %>%
        molecule.s._current_season%in% Group_3~ "Group_3",
        molecule.s._current_season%in% Group_7 ~ "Group_7",
        molecule.s._current_season%in% Group_11 ~ "Group_11",
-       molecule.s._current_season%in% Group_3_Group_7~ "Group_3&Group_7",
+       
        molecule.s._current_season%in% Group_3_Group_11~ "Group_3&Group_11",
        molecule.s._current_season%in% Group_7_Group_11~ "Group_7&Group_11",
        molecule.s._current_season%in% Group_3_not_considered_group~ "Group_3&not_considered_group",
@@ -509,7 +509,7 @@ wm1_ <- wm1_  %>%
        molecule.s._previous_seasons%in% Group_3~ "Group_3",
        molecule.s._previous_seasons%in% Group_7 ~ "Group_7",
        molecule.s._previous_seasons%in% Group_11 ~ "Group_11",
-       molecule.s._previous_seasons%in% Group_3_Group_7~ "Group_3&Group_7",
+       
        molecule.s._previous_seasons%in% Group_3_Group_11~ "Group_3&Group_11",
        molecule.s._previous_seasons%in% Group_7_Group_11~ "Group_7&Group_11",
        molecule.s._previous_seasons%in% Group_3_not_considered_group~ "Group_3&not_considered_group",
@@ -666,6 +666,7 @@ levels(droplevels(wm5$Field))
 ```
 ```{r}
 #taking into account the mixes in previous season but  not on current season
+#check the objects for single MOA?
 mask <- grep("Group_11", wm1_$Group_MOA_previous_seasons)
 #wm1_[mask,] %>% summary()
 wm2 <- wm1_[mask,] 
@@ -693,6 +694,7 @@ summary(wm5)
 
 ```{r}
 #taking into account the mixes in current season but  not on previous seasons
+#check the objects for single MOA?
 mask <- grep("Group_11", wm1_$Group_MOA_current_season)
 #wm1_[mask,] %>% summary()
 wm2 <- wm1_[mask,] 
@@ -721,6 +723,7 @@ summary(wm5)
 
 For both cases 
 ```{r}
+#check the objects for single MOA?
 summary(wm1_ %>% filter(Group_MOA_previous_seasons== "Group_one"))
 summary(wm1_ %>% filter(Group_MOA_previous_seasons== "Group_3"))
 summary(wm1_ %>% filter(Group_MOA_previous_seasons== "Group_7"))
@@ -730,6 +733,7 @@ summary(wm1_ %>% filter(Group_MOA_previous_seasons== "Group_11"))
 
 ```{r}
 #Selecting those that in both seasons are repeated by Group
+#check the objects for single MOA?
 mask <- grep("Group_11|Group_7", wm1_$Group_MOA_previous_seasons)
 #wm1_[mask,] %>% summary()
 wm2 <- wm1_[mask,] 
@@ -744,6 +748,7 @@ wm3 <- wm1_[mask2,]
 
 Hypothsis 2, not group repeated in previous season
 ```{r}
+#check the objects for single MOA?
 mask <- grep("Group_11", wm1_$Group_MOA_current_season)
 #wm1_[mask,] %>% summary()
 wm2 <- wm1_[mask,] 
@@ -776,6 +781,7 @@ levels(droplevels(wm2$Field))
 
 ##Fungicide field trials
 ```{r}
+#generalized summary
 a <- wm1_ %>% filter(State== "IA" ) %>% select(Host, State, County, Field, Origin, Collection_ID, Form.ID, long, lat, Fungicide_current_season, Fungicide_previous_seasons, Group_MOA_current_season, Group_MOA_previous_seasons, Year) %>% filter(Origin == "fungicide field trials") %>%group_by(Field)  %>% filter(n() > 9) %>% ungroup() %>%  group_by(County, Year) %>% summarize(N=n())
 
 b <- wm1_ %>% filter(State== "WI" ) %>% select(Host, State, County, Field, Origin, Collection_ID, Form.ID, long, lat, Fungicide_current_season, Fungicide_previous_seasons, Year) %>% filter(Origin == "fungicide field trials") %>%
@@ -785,6 +791,7 @@ b <- wm1_ %>% filter(State== "WI" ) %>% select(Host, State, County, Field, Origi
 ```
 
 ```{r}
+
 a_a <- wm1_ %>% filter(State== "IA" ) %>% select( State, County, Field,Year,  Origin, Collection_ID, Form.ID, long, lat, Fungicide_current_season,  Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter(Origin == "fungicide field trials") %>%group_by(Field)  %>% filter(n() > 9) %>% ungroup()%>% select( State, County, Field,Year,  long, lat, Group_MOA_current_season) %>% group_by(State, Field, Year, Group_MOA_current_season) %>% summarize(N=n()) %>% filter(!Group_MOA_current_season == "unknown")
 
 b_b <- wm1_ %>% filter(State== "WI" ) %>% select( State, County, Field,Year,  Origin, Collection_ID, Form.ID, long, lat, Fungicide_current_season,  Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter(Origin == "fungicide field trials") %>%group_by(Field)  %>% filter(n() > 9) %>% ungroup()%>% select( State, County, Field,Year,  long, lat, Group_MOA_current_season) %>% group_by(State, Field, Year, Group_MOA_current_season) %>% summarize(N=n()) %>% 
