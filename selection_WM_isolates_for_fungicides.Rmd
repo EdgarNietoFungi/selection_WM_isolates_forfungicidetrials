@@ -30,12 +30,52 @@ knitr::opts_chunk$set(echo = TRUE)
 ###Reading data 
 ```{r}
 ###
-WM <- read.csv("data/WM-fixingproductnamesID2573_modifyingforactiveingredient_3.csv", stringsAsFactors = TRUE)# Making the columns as 
+WM <- read.csv("data/WM-fixingproductnamesID2573_modifyingforactiveingredient_4.csv", stringsAsFactors = TRUE)# Making the columns as 
 WM$Collection_ID <- str_squish(WM$Collection_ID)# reading with the symbols that this column has
 #factors
 #filtering  because in blank on with question mark in the inventory
 WM <-  WM %>% 
-   filter(!Collection_ID== "429", !Collection_ID== "433", !Collection_ID== "442", !Collection_ID== "1048", !Collection_ID== "1049", !Collection_ID== "2217", !Collection_ID== "2219", !Collection_ID== "2226", !Collection_ID== "2245", !Collection_ID== "2307", !Collection_ID== "2327", !Collection_ID== "2352", !Collection_ID== "2366", !Collection_ID== "2367", !Collection_ID== "2380", !Collection_ID== "2392"  )
+   filter(!Collection_ID== "429", !Collection_ID== "433", !Collection_ID== "442", !Collection_ID== "1048", !Collection_ID== "1049", !Collection_ID== "2217", !Collection_ID== "2219", !Collection_ID== "2226", !Collection_ID== "2245", !Collection_ID== "2307", !Collection_ID== "2327", !Collection_ID== "2352", !Collection_ID== "2366", !Collection_ID== "2367", !Collection_ID== "2380", !Collection_ID== "2392", !Collection_ID== "2343", #Yuba Experiment
+!Collection_ID== "2344", #Yuba Experiment
+!Collection_ID== "2345", #Yuba Experiment
+!Collection_ID== "2346", #Yuba Experiment
+!Collection_ID== "2347", #Yuba Experiment
+!Collection_ID== "2348", #Yuba Experiment
+!Collection_ID== "2349", #Yuba Experiment
+!Collection_ID== "2350", #Yuba Experiment
+!Collection_ID== "2351", #Yuba Experiment
+!Collection_ID== "2352", #Yuba Experiment
+!Collection_ID== "2353", #Yuba Experiment
+!Collection_ID== "2354", #Yuba Experiment
+!Collection_ID== "2355", #Yuba Experiment
+!Collection_ID== "2356", #Yuba Experiment
+!Collection_ID== "2357", #Yuba Experiment
+!Collection_ID== "2358", #Yuba Experiment
+!Collection_ID== "2359", #Yuba Experiment
+!Collection_ID== "2360", #Yuba Experiment
+!Collection_ID== "2361", #Yuba Experiment
+
+!Collection_ID== "2362", #Yuba Experiment
+!Collection_ID== "2363", #Yuba Experiment
+!Collection_ID== "2364", #Yuba Experiment
+!Collection_ID== "2365", #Yuba Experiment
+!Collection_ID== "2366", #Yuba Experiment
+!Collection_ID== "2367", #Yuba Experiment
+!Collection_ID== "2368", #Yuba Experiment
+!Collection_ID== "2369", #Yuba Experiment
+!Collection_ID== "2370", #Yuba Experiment
+!Collection_ID== "2371", #Yuba Experiment
+!Collection_ID== "2372", #Yuba Experiment
+!Collection_ID== "2373", #Yuba Experiment
+!Collection_ID== "2374", #Yuba Experiment
+!Collection_ID== "2375", #Yuba Experiment
+!Collection_ID== "2376", #Yuba Experiment
+!Collection_ID== "2377", #Yuba Experiment
+!Collection_ID== "2378", #Yuba Experiment
+!Collection_ID== "2379", #Yuba Experiment
+!Collection_ID== "2380", #Yuba Experiment
+!Collection_ID== "2381" #Yuba Experiment
+)
 #WM<- WM[-c(1055,419,423, 432),]# Taking out this row that is in blank
 WM$long <- as.numeric  (as.character(WM$long))# Transforming long variables to numeric
 #WM<- WM[-1293, ]
@@ -538,7 +578,7 @@ drybeans_tested <- wm1_%>% select(Collection_ID, State, County, Country, Origin,
 
 levels(drybeans_tested$Group_MOA_current_season) = c("Group_11" , "Group_3", "Group_3&Group_11", "Group_3&Group_7", "Group_3&not_considered_group", "Group_7", "Group_7&Group_11","Group_one", "unknown", "no fungicide" )
 
-levels(drybeans_tested$Group_MOA_previous_seasons) = c("Group_11" ,  "Group_3", "Group_3&Group_11",  "Group_3&Group_7", "Group_7&Group_11", "Group_one", "unknown", "no fungicide")
+levels(drybeans_tested$Group_MOA_previous_seasons) = c("Group_11" ,  "Group_3", "Group_3&Group_11", "Group_7&Group_11", "Group_one", "unknown", "no fungicide")
 
 drybeans_tested$Group_MOA_current_season[drybeans_tested$Origin%in% c("baseline isolates")] <- "no fungicide"
 drybeans_tested$Group_MOA_previous_seasons[drybeans_tested$Origin%in% c("baseline isolates")] <- "no fungicide"
@@ -562,15 +602,15 @@ soybeans_tested <- wm1_%>% select(Collection_ID, State, County, Country, Origin,
 
 
 
-levels(soybeans_tested$Group_MOA_current_season) = c("Group_11" , "Group_3", "Group_3&Group_11", "Group_3&Group_7", "Group_3&not_considered_group", "Group_7", "Group_7&Group_11","Group_one", "unknown", "no fungicide" )
+levels(soybeans_tested$Group_MOA_current_season) = c("Group_11" , "Group_3", "Group_3&Group_11", "Group_3&not_considered_group", "Group_7", "Group_7&Group_11","Group_one", "unknown", "no fungicide" )
 
-levels(soybeans_tested$Group_MOA_previous_seasons) = c("Group_11" ,  "Group_3", "Group_3&Group_11",  "Group_3&Group_7", "Group_7&Group_11", "Group_one", "unknown", "no fungicide")
+levels(soybeans_tested$Group_MOA_previous_seasons) = c("Group_11" ,  "Group_3", "Group_3&Group_11", "Group_7&Group_11", "Group_one", "unknown", "no fungicide")
 
 soybeans_tested$Group_MOA_current_season[soybeans_tested$Origin%in% c("baseline isolates")] <- "no fungicide"
 soybeans_tested$Group_MOA_previous_seasons[soybeans_tested$Origin%in% c("baseline isolates")] <- "no fungicide"
 
 
-
+#before running take out this "Group_3&Group_7", not more exist
 soybeans_tested2<- soybeans_tested%>% group_by( State,Country,  Origin,  Group_MOA_current_season,  Group_MOA_previous_seasons) %>%  summarize(N_isolates=n())%>% arrange(desc(N_isolates)) %>%ungroup() %>% mutate(Group_MOA_current_season = recode(Group_MOA_current_season, Group_11 = "Group 11" , Group_7= "Group 7", 'Group_3&Group_7'= "Group 3 & Group 7", 'Group_7&Group_11'= "Group 7 & Group 11", Group_one= "Group 1")) %>% mutate(Group_MOA_previous_seasons = recode(Group_MOA_previous_seasons,Group_11 = "Group 11", 'Group_3&Group_7'= "Group 3 & Group 7" ))%>% add_row(State = "Total", N_isolates = sum(.$N_isolates)) %>% rename( "N isolates" = N_isolates, "MOA current season" = Group_MOA_current_season,  "MOA previous seasons" =Group_MOA_previous_seasons)%>% kable(format = "markdown") %>%  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = F, position = "center") %>%  write2pdf("soybean_isolates_pretest.pdf")# quiet = TRUE)
 
 
@@ -589,6 +629,204 @@ drybeans_tested2
 #q <- drybeans_tested %>%  group_by(State) %>% summarize(n=n())
 
  
+```
+
+```{r}
+home <-
+  wm1_ %>% select(
+    State,
+    County,
+    Field,
+    Year,
+    Origin,
+    Collection_ID,
+    Form.ID,
+    long,
+    lat,
+    molecule.s._current_season,
+    Applications,
+    Rate
+  ) %>% filter(Origin == "fungicide field trials" &
+                 Year == 2015) %>% group_by(Field)  %>% filter(n() > 9) %>% ungroup() %>% select( Year,State,
+                                                                                                 County,
+                                                                                                 Field,
+                                                                                                 long,
+                                                                                                 lat,
+                                                                                                 molecule.s._current_season,
+                                                                                                 Applications,
+                                                                                                 Rate) %>% 
+  group_by(State, Field, Year, molecule.s._current_season, Applications,
+           Rate) %>% 
+  summarize(N = n()) %>%                                                            
+  filter(!molecule.s._current_season == "unknown") %>% arrange( factor(molecule.s._current_season, levels = c("boscalid", "picoxystrobin", "thiophanate_methyl", "control"))) %>% ungroup() %>% 
+add_row(State = "Total", N = sum(.$N)) %>% rename( "N isolates" = N, "Rate (oz/A)"= Rate   ,"Molecule current season" = molecule.s._current_season) %>% 
+   mutate( `Molecule current season` = recode(`Molecule current season`, thiophanate_methyl = "thiophanate methyl"))  %>% kable(format = "markdown")%>%  # kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = F, position = "center")
+ write2pdf("fungicide_field_trials_2015.pdf")# quiet = TRUE)
+
+
+
+home2 <-
+  wm1_ %>% select(
+    State,
+    County,
+    Field,
+    Year,
+    Origin,
+    Collection_ID,
+    Form.ID,
+    long,
+    lat,
+    molecule.s._current_season,
+    Applications,
+    Rate
+  ) %>% filter(Origin == "fungicide field trials" &
+                 Year == 2016) %>% group_by(Field)  %>% filter(n() > 9) %>% ungroup() %>% select( Year,State,
+                                                                                                 County,
+                                                                                                 Field,
+                                                                                                 long,
+                                                                                                 lat,
+                                                                                                 molecule.s._current_season,
+                                                                                                 Applications,
+                                                                                                 Rate) %>% 
+  group_by(State, Field, Year, molecule.s._current_season, Applications,
+           Rate) %>% 
+  summarize(N = n()) %>%                                                            
+  filter(!molecule.s._current_season == "unknown", !molecule.s._current_season == "No_info") %>% arrange( factor(molecule.s._current_season, levels = c("boscalid", "picoxystrobin", "thiophanate_methyl", "control", "tetraconazole","tetraconazole + flutriafol + fluxastrobin", "azoxystrobin + difenoconazole", "flutriafol", "flutriafol + fluxastrobin", "fluxapyroxad + pyraclostrobin", "propiconazole + azoxystrobin", "prothioconazole + trifloxystrobin", "pyraclostrobin", "tebuconazole + potassium phosphite" ))) %>% ungroup() %>% 
+add_row(State = "Total", N = sum(.$N)) %>% rename( "N isolates" = N, "Rate (oz/A)"= Rate   ,"Molecule current season" = molecule.s._current_season) %>% 
+   mutate( `Molecule current season` = recode(`Molecule current season`, thiophanate_methyl = "thiophanate methyl"))  %>% kable(format = "markdown")%>%  # kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = F, position = "center")
+ write2pdf("fungicide_field_trials_2016.pdf")# quiet = TRUE)
+
+home3 <-
+  wm1_ %>% select(
+    State,
+    County,
+    Field,
+    Year,
+    Origin,
+    Collection_ID,
+    Form.ID,
+    long,
+    lat,
+    molecule.s._current_season,
+    Applications,
+    Rate
+  ) %>% filter(Origin == "fungicide field trials" &
+                 Year == 2017) %>% group_by(Field)  %>% filter(n() > 9) %>% ungroup() %>% select( Year,State,
+                                                                                                 County,
+                                                                                                 Field,
+                                                                                                 long,
+                                                                                                 lat,
+                                                                                                 molecule.s._current_season,
+                                                                                                 Applications,
+                                                                                                 Rate) %>% 
+  group_by(State, Field, Year, molecule.s._current_season, Applications,
+           Rate) %>% 
+  summarize(N = n()) %>%                                                            
+  filter(!molecule.s._current_season == "unknown") %>% arrange( factor(molecule.s._current_season, levels = c("boscalid", "picoxystrobin", "thiophanate_methyl", "control"))) %>% ungroup() %>% 
+add_row(State = "Total", N = sum(.$N)) %>% rename( "N isolates" = N, "Rate (oz/A)"= Rate   ,"Molecule current season" = molecule.s._current_season) %>% 
+   mutate( `Molecule current season` = recode(`Molecule current season`, thiophanate_methyl = "thiophanate methyl"))  %>% kable(format = "markdown")%>%  # kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = F, position = "center")
+ write2pdf("fungicide_field_trials_2017.pdf")# quiet = TRUE)
+
+
+
+
+
+```
+cnd
+```{r}
+wm1_2<- wm1_%>% select(Collection_ID, State, County, Country, Origin, Field, Year, Fungicide_status, Host, Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter(Fungicide_status == "tested") #%>% group_by(Host, State, Origin,Year, Group_MOA_current_season,  Group_MOA_previous_seasons) 
+  
+  levels(wm1_2$Group_MOA_current_season)
+  levels(wm1_2$Group_MOA_previous_seasons)
+
+   
+levels(wm1_2$Group_MOA_current_season) = c("Group_11" , "Group_3", "Group_3&Group_11", "Group_3&Group_7", "Group_3&not_considered_group", "Group_7", "Group_7&Group_11","Group_one", "unknown", "no fungicide" )
+
+levels(wm1_2$Group_MOA_previous_seasons) = c("Group_11" ,  "Group_3", "Group_3&Group_11", "Group_7&Group_11", "Group_one", "unknown", "no fungicide")
+
+wm1_2$Group_MOA_current_season[wm1_2$Origin%in% c("baseline isolates")] <- "no fungicide"
+wm1_2$Group_MOA_previous_seasons[wm1_2$Origin%in% c("baseline isolates")] <- "no fungicide"
+
+
+
+
+```
+
+```{r}
+
+
+mask <- grep("Group_11", wm1_2$Group_MOA_previous_seasons)
+#wm1_2[mask,] %>% summary()
+wm2 <- wm1_2[mask,] 
+summary(wm2)
+wm2$Field <- as.factor( as.character(wm2$Field))
+
+wm2 %>% group_by(Field) %>% summarize (num_isolates_per_field = n()) %>% arrange(desc(num_isolates_per_field)) #%>% slice(1:13)
+
+wm2 <- wm2 %>% group_by(Field)  %>% filter(n() > 9)
+  levels(droplevels(wm2$Field))
+summary(wm2)  
+# 0
+
+maskk <- grep("Group_11", wm1_2$Group_MOA_current_season)
+wm2 <- wm1_2[maskk,]
+#wm2$Field <- as.factor( as.character(wm2$Field))
+levels(droplevels(wm2$Field))
+#fields "78" "cer"  "han"   "lan"  "mon" "na"  "po"  "wau"
+# For # 6 it does not mention any product used with corn so not sure if it was previously maize
+#for# 18 it was previously maize cus it mentions a product for this
+#for# 62 it was previously maize cus it mentions a product for this
+# For # 99 it does not mention any product used with corn so not sure if it was previously maize
+# For # 100 it does not mention any product used with corn so not sure if it was previously maize
+
+mask2 <- grep("Group_one", wm1_2$Group_MOA_previous_seasons)
+#wm1_2[mask,] %>% summary()
+wm3 <- wm1_2[mask2,] 
+summary(wm3)
+
+
+mask3 <- grep("Group_3", wm1_2$Group_MOA_previous_seasons)
+#wm1_2[mask,] %>% summary()
+wm4 <- wm1_2[mask3,] 
+summary(wm4)
+wm4$Field <- as.factor( as.character(wm4$Field))
+
+wm4 %>% group_by(Field) %>% summarize (num_isolates_per_field = n()) %>% arrange(desc(num_isolates_per_field)) %>% slice(1:3)
+wm4 <- wm4 %>% group_by(Field)  %>% filter(n() > 9)
+maskkk <- grep("Group_3", wm4$Group_MOA_current_season)
+wm4 <- wm4[maskkk,]
+wm4$Field <- as.factor( as.character(wm4$Field))
+levels(droplevels(wm4$Field))
+#fields  "0""
+
+
+
+mask4 <- grep("Group_7", wm1_2$Group_MOA_previous_seasons)
+#wm1_2[mask,] %>% summary()
+wm5 <- wm1_2[mask4,] 
+summary(wm5)
+wm5$Field <- as.factor( as.character(wm5$Field))
+#0
+
+wm5 %>% group_by(Field) %>% summarize (num_isolates_per_field = n()) %>% arrange(desc(num_isolates_per_field)) %>% slice(1:9)
+wm5 <- wm5 %>% group_by(Field)  %>% filter(n() > 9)
+
+maskkkk <- grep("Group_7", wm5$Group_MOA_current_season)
+wm5 <- wm5[maskkkk,]
+wm5$Field <- as.factor( as.character(wm5$Field))
+levels(droplevels(wm5$Field))
+#fields "0
+
+#for# 18 it was previously maize cus it mentions a product for this
+# For # 6 it does not mention any product used with corn so not sure if it was previously maize
+
+# For # 78 it does not mention any product used with corn so not sure if it was previously maize
+
+
+# For # 99 it does not mention any product used with corn so not sure if it was previously maize
+# For # 100 it does not mention any product used with corn so not sure if it was previously maize
+
+
 ```
 
 ```{r}
@@ -782,23 +1020,134 @@ levels(droplevels(wm2$Field))
 ##Fungicide field trials
 ```{r}
 #generalized summary
-a <- wm1_ %>% filter(State== "IA" ) %>% select(Host, State, County, Field, Origin, Collection_ID, Form.ID, long, lat, Fungicide_current_season, Fungicide_previous_seasons, Group_MOA_current_season, Group_MOA_previous_seasons, Year) %>% filter(Origin == "fungicide field trials") %>%group_by(Field)  %>% filter(n() > 9) %>% ungroup() %>%  group_by(County, Year) %>% summarize(N=n())
+
+a <- wm1_ %>% filter(State== "IA" ) %>% select(Host, State, County, Field, Origin, Collection_ID, Form.ID, long, lat, Fungicide_current_season, Fungicide_previous_seasons, Group_MOA_current_season, Group_MOA_previous_seasons, Year) %>% filter(Origin == "fungicide field trials") %>%group_by(Field)  %>% filter(n() > 9) %>% ungroup() %>%  group_by(State,County, Year) %>% summarize(N=n())
 
 b <- wm1_ %>% filter(State== "WI" ) %>% select(Host, State, County, Field, Origin, Collection_ID, Form.ID, long, lat, Fungicide_current_season, Fungicide_previous_seasons, Year) %>% filter(Origin == "fungicide field trials") %>%
   group_by(Field)  %>% filter(n() > 9) %>% ungroup() %>%
-  group_by(County, Year) %>% summarize(N=n())
-                                                             c <- wm1_ %>% filter(State== "MI" ) %>% select(Host, State, County, Field,  Origin, Collection_ID, Form.ID, long, lat, Fungicide_current_season, Fungicide_previous_seasons, Year) %>% filter(Origin == "fungicide field trials")%>%group_by(Field)  %>% filter(n() > 9) %>% ungroup() %>% group_by(County, Year) %>% summarize(N=n())                 
+  group_by(State, County, Year) %>% summarize(N=n())
+                                                             
+c <- wm1_ %>% filter(State== "MI" ) %>% select(Host, State, County, Field,  Origin, Collection_ID, Form.ID, long, lat, Fungicide_current_season, Fungicide_previous_seasons, Year) %>% filter(Origin == "fungicide field trials")%>%group_by(Field)  %>% filter(n() > 9) %>% ungroup() %>% group_by(State,County, Year) %>% summarize(N=n())                 
 ```
 
 ```{r}
+b <- wm1_ %>% filter(State== "WI" ) %>% select(Host, State, County, Field, Origin, Collection_ID, Form.ID, long, lat, Fungicide_current_season, Fungicide_previous_seasons, Year) %>% filter(Origin == "fungicide field trials") %>%
+  group_by(Field)  %>% filter(n() > 9) %>% ungroup() %>%
+  group_by(State, County, Year) %>% summarize(N=n())
 
-a_a <- wm1_ %>% filter(State== "IA" ) %>% select( State, County, Field,Year,  Origin, Collection_ID, Form.ID, long, lat, Fungicide_current_season,  Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter(Origin == "fungicide field trials") %>%group_by(Field)  %>% filter(n() > 9) %>% ungroup()%>% select( State, County, Field,Year,  long, lat, Group_MOA_current_season) %>% group_by(State, Field, Year, Group_MOA_current_season) %>% summarize(N=n()) %>% filter(!Group_MOA_current_season == "unknown")
+c <- wm1_ %>% filter(State== "MI" ) %>% select(Host, State, County, Field,  Origin, Collection_ID, Form.ID, long, lat, Fungicide_current_season, Fungicide_previous_seasons, Year) %>% filter(Origin == "fungicide field trials")%>%group_by(Field)  %>% filter(n() > 9) %>% ungroup() %>% group_by(State,County, Year) %>% summarize(N=n())
+```
 
-b_b <- wm1_ %>% filter(State== "WI" ) %>% select( State, County, Field,Year,  Origin, Collection_ID, Form.ID, long, lat, Fungicide_current_season,  Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter(Origin == "fungicide field trials") %>%group_by(Field)  %>% filter(n() > 9) %>% ungroup()%>% select( State, County, Field,Year,  long, lat, Group_MOA_current_season) %>% group_by(State, Field, Year, Group_MOA_current_season) %>% summarize(N=n()) %>% 
-filter(!Group_MOA_current_season == "unknown")
+```{r}
+a_a <-
+  wm1_ %>% filter(State == "IA") %>% select(
+  State,
+  County,
+  Field,
+  Year,
+  Origin,
+  Collection_ID,
+  Form.ID,
+  long,
+  lat,
+  Fungicide_current_season,
+  Group_MOA_current_season,
+  Group_MOA_previous_seasons, 
+  Applications,
+  Rate
+  ) %>% filter(Origin == "fungicide field trials") %>% group_by(Field)  %>% filter(n() > 9) %>% ungroup() %>% select(State, County, Field, Year,  long, lat, Group_MOA_current_season, Applications,
+  Rate) %>% mutate(Index_fungicides = Applications*Rate) %>% group_by(State, Field, Year, Group_MOA_current_season, Index_fungicides) %>% summarize(N =
+  n()) %>%
+  filter(!Group_MOA_current_season == "unknown")
 
+
+b_b <-
+  wm1_ %>% filter(State == "WI") %>% select(
+  State,
+  County,
+  Field,
+  Year,
+  Origin,
+  Collection_ID,
+  Form.ID,
+  long,
+  lat,
+  Fungicide_current_season,
+  Group_MOA_current_season,
+  Group_MOA_previous_seasons, 
+  Applications,
+  Rate
+  ) %>% filter(Origin == "fungicide field trials") %>% group_by(Field)  %>% filter(n() > 9) %>% ungroup() %>% select(State, County, Field, Year,  long, lat, Group_MOA_current_season, Applications,
+  Rate) %>% mutate(Index_fungicides = Applications*Rate) %>% group_by(State, Field, Year, Group_MOA_current_season, Index_fungicides) %>% summarize(N =
+  n()) %>%
+  filter(!Group_MOA_current_season == "unknown")
+  
 c_c <- wm1_ %>% filter(State== "MI" ) %>% select( State, County, Field,Year,  Origin, Collection_ID, Form.ID, long, lat, Fungicide_current_season,  Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter(Origin == "fungicide field trials") %>%group_by(Field)  %>% filter(n() > 9) %>% ungroup()%>% select( State, County, Field,Year,  long, lat, Group_MOA_current_season) %>% group_by(State, Field, Year, Group_MOA_current_season) %>% summarize(N=n()) %>% 
 filter(!Group_MOA_current_season == "unknown")
+
+```
+##chunk good
+```{r}
+ a_a <-
+  wm1_ %>% filter(State == "IA") %>% select(
+    State,
+    County,
+    Field,
+    Year,
+    Origin,
+    Collection_ID,
+    Form.ID,
+    long,
+    lat,
+    molecule.s._current_season, 
+    Applications,
+    Rate
+  ) %>% filter(Origin == "fungicide field trials") %>% group_by(Field)  %>% filter(n() > 9) %>% ungroup() %>% select(State, County, Field, Year,  long, lat, molecule.s._current_season, Applications,
+                                                                                                                     Rate) %>% mutate(Index_fungicides = Applications*Rate) %>% group_by(State, Field, Year, molecule.s._current_season, Index_fungicides) %>% summarize(N =
+                                                                                                                                                                                                                                                                         n()) %>% ungroup()
+
+
+
+b_b <-
+  wm1_ %>% filter(State == "WI") %>% select(
+    State,
+    County,
+    Field,
+    Year,
+    Origin,
+    Collection_ID,
+    Form.ID,
+    long,
+    lat,
+    molecule.s._current_season, 
+    Applications,
+    Rate
+  ) %>% filter(Origin == "fungicide field trials") %>% group_by(Field)  %>% filter(n() > 9) %>% ungroup() %>% select(State, County, Field, Year,  long, lat, molecule.s._current_season, Applications,
+                                                                                                                     Rate) %>% mutate(Index_fungicides = Applications*Rate) %>% group_by(State, Field, Year, molecule.s._current_season, Index_fungicides) %>% summarize(N =
+                                                                                                                                                                                                                                                                           n()) %>% 
+  filter(!molecule.s._current_season == "unknown") %>% ungroup()
+
+
+c_c <-
+  wm1_ %>% filter(State == "MI") %>% select(
+    State,
+    County,
+    Field,
+    Year,
+    Origin,
+    Collection_ID,
+    Form.ID,
+    long,
+    lat,
+    molecule.s._current_season, 
+    Applications,
+    Rate
+  ) %>% filter(Origin == "fungicide field trials") %>% group_by(Field)  %>% filter(n() > 9) %>% ungroup() %>% select(State, County, Field, Year,  long, lat, molecule.s._current_season, Applications,
+                                                                                                                     Rate) %>% mutate(Index_fungicides = Applications*Rate) %>% group_by(State, Field, Year, molecule.s._current_season, Index_fungicides) %>% summarize(N =
+                                                                                                                                                                                                                                                                           n()) %>% 
+  filter(!molecule.s._current_season == "unknown") %>% ungroup()
+
+home <- rbind(a_a, b_b, c_c)
 
 ```
 
