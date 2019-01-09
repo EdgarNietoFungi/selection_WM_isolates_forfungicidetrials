@@ -459,9 +459,8 @@ Group_7_Group_11 <- c(
   # )  
 ```
 
-
-```{r `}
-  wm1 <-
+```{r}
+wm1 <-
   WM %>% select(
     Collection_ID,
     Host, 
@@ -565,6 +564,12 @@ wm1_ <- wm1_  %>%
 wm1_$Group_MOA_current_season <- as.factor(wm1_$Group_MOA_current_season)
 wm1_$Group_MOA_previous_seasons <- as.factor(wm1_$Group_MOA_previous_seasons)
 
+
+```
+ 
+
+```{r `}
+  
 drybeans_tested <- wm1_%>% select(Collection_ID, State, County, Country, Origin, Year, Fungicide_status, Host, Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter(Fungicide_status == "tested", Host== "drybeans") #%>% group_by(Host, State, Origin,Year, Group_MOA_current_season,  Group_MOA_previous_seasons) 
   
   levels(drybeans_tested$Group_MOA_current_season)
@@ -630,7 +635,7 @@ drybeans_tested2
 
  
 ```
-
+Gathering by year
 ```{r}
 home <-
   wm1_ %>% select(
@@ -732,9 +737,9 @@ add_row(State = "Total", N = sum(.$N)) %>% rename( "N isolates" = N, "Rate (oz/A
 
 
 ```
-cnd
+cnd origin farmer
 ```{r}
-wm1_2<- wm1_%>% select(Collection_ID, State, County, Country, Origin, Field, Year, Fungicide_status, Host, Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter(Fungicide_status == "tested") #%>% group_by(Host, State, Origin,Year, Group_MOA_current_season,  Group_MOA_previous_seasons) 
+wm1_2<- wm1_%>% select(Collection_ID, State, County, Country, Origin, Field, Year, Fungicide_status, Host, Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter( Origin == 'farmer fields' ) #%>% group_by(Host, State, Origin,Year, Group_MOA_current_season,  Group_MOA_previous_seasons) 
   
   levels(wm1_2$Group_MOA_current_season)
   levels(wm1_2$Group_MOA_previous_seasons)
@@ -750,6 +755,15 @@ wm1_2$Group_MOA_previous_seasons[wm1_2$Origin%in% c("baseline isolates")] <- "no
 
 
 
+```
+new one
+```{r}
+mask <- wm1_2 %>% filter(Group_MOA_previous_seasons == "Group_11" )
+mask$Field <- as.factor( as.character(mask$Field))
+wm2 <- mask %>% group_by(Field)  %>% filter(n() > 9)
+  levels(droplevels(wm2$Field))
+summary(mask)  
+#0
 ```
 
 ```{r}
