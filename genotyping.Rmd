@@ -3,8 +3,8 @@ title: "WM_selection"
 author: "Nieto_Lopez"
 date: "8/29/2018"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 #SELECTION OF WHITE MOLD ISOLATES (_Sclerotinia sclerotiorum_) FOR FUNGICIDE _IN VITRO_ TEST BY DISCRIMINATORY DOSES  
 
