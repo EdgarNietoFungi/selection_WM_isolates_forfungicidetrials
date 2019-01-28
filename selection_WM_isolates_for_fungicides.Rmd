@@ -731,6 +731,38 @@ trestres <- drybeans_no_tested %>% filter(Field=="WM_production_1"| Field=="WM_p
 trestres %>%  group_by( State, Year, Field) %>%  summarize(N_isolates=n())%>% arrange(State)%>%ungroup() %>% add_row(State = "Total", N_isolates = sum(.$N_isolates))
 
 ####################
+mycosphaerella <-
+  drybeans_no_tested %>% 
+  filter(Field=="WM_production_1"|
+                              Field=="WM_production_2"|
+                                Field=="WM_production_3"|
+                                Field=="WM_production_4"|
+                                Field=="WM_production_5"|
+                                Field=="WM_production_6"|
+                                Field=="WM_production_7"|
+                                Field=="WM_production_8"|
+                                Field=="WM_production_9"|
+                                Field=="WM_production_10"|
+                                Field=="WM_production_11"|
+                                Field=="WM_production_12"|
+                                Field=="WM_production_13"|
+                                Field=="WM_production_14"|
+                                Field=="WM_production_15"|
+                                Field=="WM_production_16"|
+                                Field=="WM_production_17"|
+                                Field=="WM_production_18"|
+                                Field=="WM_production_19"|
+                                Field=="WM_production_20"|
+                                Field=="WM_production_21"|
+                                Field=="WM_production_22"|
+                                Field=="WM_production_23"|
+                                Field=="WM_production_24"|
+                                Field=="WM_production_25"|
+                                Field=="WM_production_26"|
+                                Field=="WM_production_27"|
+                                Field=="WM_production_28"|
+                                Field=="WM_production_29"  
+  ) %>% group_by(State, Year, Field) %>% summarize(N_isolates_notested = n()) %>% arrange(desc(N_isolates_notested)) %>% ungroup()  
 
 
 # drybeans_no_tested %>% filter(Field=="WM_production_1"| Field=="WM_production_2"| Field=="WM_production_3"|Field=="WM_production_4"|Field=="WM_production_5"|Field=="WM_production_6"|Field=="WM_production_7"|Field=="WM_production_9"|Field=="WM_production_10")                                      
@@ -786,7 +818,7 @@ hello <-
                                 Field=="WM_production_29"|
   
 Field=="WM_production_30"  
-  ) %>% group_by(State, Year, Field) %>% summarize(N_isolates = n()) %>% arrange(desc(N_isolates)) %>% ungroup() %>% add_row(State = "Total", N_isolates = sum(.$N_isolates)) 
+  ) %>% group_by(State, Year, Field) %>% summarize(N_isolates_tested = n()) %>% arrange(desc(N_isolates_tested)) %>% ungroup()  
 #creating new table
 drybeans_testedd %>% 
   filter(Field=="WM_production_1"|
@@ -822,6 +854,77 @@ drybeans_testedd %>%
 Field=="WM_production_30"  
   ) %>% group_by(State, Year, Field) %>% summarize(N_isolates = n()) %>% arrange(desc(N_isolates)) %>% ungroup() %>% add_row(State = "Total", N_isolates = sum(.$N_isolates)) %>% kable(format = "markdown")  %>%  write2pdf("new_table2.pdf")# quiet = TRUE)
   
+# HOW Sydney asked with two columns
+
+cercospora <-
+  mycosphaerella %>% inner_join(hello) %>% add_row(
+    State = "ND",
+    Year = "2007",
+    Field = "WM_production_3",
+    N_isolates_notested = 7,
+    N_isolates_tested = 0,
+    .before = 4
+  )%>% add_row(
+    State = "MI",
+    Year = "2009",
+    Field = "WM_production_14",
+    N_isolates_notested = 1,
+    N_isolates_tested = 0,
+    .before = 22
+  )%>% add_row(
+    State = "MI",
+    Year = "2009",
+    Field = "WM_production_15",
+    N_isolates_notested = 1,
+    N_isolates_tested = 0,
+    .before = 22
+  )%>% add_row(
+    State = "MI",
+    Year = "2009",
+    Field = "WM_production_16",
+    N_isolates_notested = 1,
+    N_isolates_tested = 0,
+    .before = 22
+  )%>% add_row(
+    State = "MI",
+    Year = "2009",
+    Field = "WM_production_19",
+    N_isolates_notested = 1,
+    N_isolates_tested = 0,
+    .before = 22
+  )%>% add_row(
+    State = "MI",
+    Year = "2009",
+    Field = "WM_production_17",
+    N_isolates_notested = 0,
+    N_isolates_tested = 1,
+    .before = 22
+  )%>% add_row(
+    State = "MI",
+    Year = "2009",
+    Field = "WM_production_18",
+    N_isolates_notested = 0,
+    N_isolates_tested = 2,
+    .before = 22
+  )%>% add_row(
+    State = "MI",
+    Year = "2009",
+    Field = "WM_production_20",
+    N_isolates_notested = 0,
+    N_isolates_tested = 1,
+    .before = 22
+  )%>% add_row(
+    State = "ND",
+    Year = "2010",
+    Field = "WM_production_30",
+    N_isolates_notested = 0,
+    N_isolates_tested = 1,
+    .before = 22
+  )%>% add_row(
+    State = "Total",
+    N_isolates_tested = sum(.$N_isolates_tested),
+    N_isolates_notested = sum(.$N_isolates_notested)
+  ) %>%  kable(format = "markdown")  %>%  write2pdf("new_table3.pdf")
 
 ###
 
@@ -838,10 +941,41 @@ drybeans_no_tested$Group_MOA_previous_seasons[drybeans_no_tested$Origin%in% c("b
 #before running take out this "Group_3&Group_7", not more exist
 levels(droplevels(drybeans_no_tested$Group_MOA_current_season))
 levels(droplevels(drybeans_no_tested$Group_MOA_previous_seasons))
-
+#summary by hosts
 hi <- drybeans_no_tested %>% group_by(State, Host) %>% summarize(N_isolates=n()) %>% arrange(State)
 
 # showed to Sydney, no grouping by year, nor by County
+```
+#  List for Cristian
+```{r}
+ drybeans_no_tested %>% filter(Field=="WM_production_1"|
+                              Field=="WM_production_2"|
+                                Field=="WM_production_3"|
+                                Field=="WM_production_4"|
+                                Field=="WM_production_5"|
+                                Field=="WM_production_6"|
+                                Field=="WM_production_7"|
+                                Field=="WM_production_8"|
+                                Field=="WM_production_9"|
+                                Field=="WM_production_10"|
+                                Field=="WM_production_11"|
+                                Field=="WM_production_12"|
+                                Field=="WM_production_13"|
+                                Field=="WM_production_18"|
+                                Field=="WM_production_20"|
+                                Field=="WM_production_21"|
+                                Field=="WM_production_22"|
+                                Field=="WM_production_23"|
+                                Field=="WM_production_24"|
+                                Field=="WM_production_25"|
+                                Field=="WM_production_26"|
+                                Field=="WM_production_27"|
+                                Field=="WM_production_28") %>%  group_by( Collection_ID, Field) %>%  summarize() %>% 
+write_csv("tableforCristiann.csv")
+```
+
+```{r}
+
 ```
 
 Gathering by year
