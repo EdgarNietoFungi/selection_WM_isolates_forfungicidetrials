@@ -1,0 +1,997 @@
+---
+title: "WM_selection"
+author: "Nieto_Lopez"
+date: "8/29/2018"
+output:
+  html_document: default
+  pdf_document: default
+---
+```{r setup, include=FALSE}
+#Image: ![](Documents/to/white_mold.png)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(maps)
+library(mapdata)
+library(geosphere)
+library(sf)
+library(lwgeom)
+library(knitr)
+library(kableExtra)
+library(tinytex)
+library(arsenal)
+library(magrittr)
+knitr::opts_chunk$set(echo = TRUE)
+# graph names of the body means "number isolates/field" 
+# graph names of powdery mildews means "Year"
+
+```
+###Reading data 
+```{r}
+###
+WM <- read.csv("data/WM-fixingproductnamesID2573_modifyingforactiveingredient_6.csv", stringsAsFactors = TRUE)# Making the columns as 
+
+WM$Collection_ID <- str_squish(WM$Collection_ID)# reading with the symbols that this column has
+#factors
+
+#filtering  out some because there are blanks on it with question mark in the inventory
+WM <-  WM %>% 
+   filter(!Collection_ID== "429", !Collection_ID== "433", !Collection_ID== "442", !Collection_ID== "1048", !Collection_ID== "1049", !Collection_ID== "2217", !Collection_ID== "2219", !Collection_ID== "2226", !Collection_ID== "2245", !Collection_ID== "2307", !Collection_ID== "2327", !Collection_ID== "2352", !Collection_ID== "2366", !Collection_ID== "2367", !Collection_ID== "2380", !Collection_ID== "2392", !Collection_ID== "2343", #Yuba Experiment
+!Collection_ID== "2344", #Yuba Experiment
+!Collection_ID== "2345", #Yuba Experiment
+!Collection_ID== "2346", #Yuba Experiment
+!Collection_ID== "2347", #Yuba Experiment
+!Collection_ID== "2348", #Yuba Experiment
+!Collection_ID== "2349", #Yuba Experiment
+!Collection_ID== "2350", #Yuba Experiment
+!Collection_ID== "2351", #Yuba Experiment
+!Collection_ID== "2352", #Yuba Experiment
+!Collection_ID== "2353", #Yuba Experiment
+!Collection_ID== "2354", #Yuba Experiment
+!Collection_ID== "2355", #Yuba Experiment
+!Collection_ID== "2356", #Yuba Experiment
+!Collection_ID== "2357", #Yuba Experiment
+!Collection_ID== "2358", #Yuba Experiment
+!Collection_ID== "2359", #Yuba Experiment
+!Collection_ID== "2360", #Yuba Experiment
+!Collection_ID== "2361", #Yuba Experiment
+
+!Collection_ID== "2362", #Yuba Experiment
+!Collection_ID== "2363", #Yuba Experiment
+!Collection_ID== "2364", #Yuba Experiment
+!Collection_ID== "2365", #Yuba Experiment
+!Collection_ID== "2366", #Yuba Experiment
+!Collection_ID== "2367", #Yuba Experiment
+!Collection_ID== "2368", #Yuba Experiment
+!Collection_ID== "2369", #Yuba Experiment
+!Collection_ID== "2370", #Yuba Experiment
+!Collection_ID== "2371", #Yuba Experiment
+!Collection_ID== "2372", #Yuba Experiment
+!Collection_ID== "2373", #Yuba Experiment
+!Collection_ID== "2374", #Yuba Experiment
+!Collection_ID== "2375", #Yuba Experiment
+!Collection_ID== "2376", #Yuba Experiment
+!Collection_ID== "2377", #Yuba Experiment
+!Collection_ID== "2378", #Yuba Experiment
+!Collection_ID== "2379", #Yuba Experiment
+!Collection_ID== "2380", #Yuba Experiment
+!Collection_ID== "2381" #Yuba Experiment
+)
+
+# Transforming long variables to numeric
+WM$long <- as.numeric  (as.character(WM$long))
+
+# Transforming the long variable to the Hemispher West side
+WM$long <- (WM$long) * -1 
+
+
+#WM$Collection_ID=="2215"
+WM$Year <- as.factor(WM$Year)
+# WM$Host <- as.factor(WM$Host)
+# WM$State <- as.factor(WM$State)
+# WM$County <- as.factor(WM$County)
+# WM$Country <- as.factor(WM$Country)
+# WM$Field <- as.factor(WM$Field)
+# WM$`Form ID` <- as.factor(WM$WM$`Form ID`)
+# WM$Serial_agar_dilution_for_creating_the_model_..N.20. <- as.factor(WM$Serial_agar_dilution_for_creating_the_model_..N.20.)
+# WM$Origin<- as.factor(WM$Origin)
+# WM$hyphal_tip..ht. <- as.factor(WM$hyphal_tip..ht.)
+# WM$DNA.Extraction <- as.factor(WM$DNA.Extraction)
+# WM$Size.of.field..acres. <- as.factor(WM$Size.of.field..acres.)
+# WM$Percentage.Affected <- as.factor(WM$Percentage.Affected)
+# WM$History <- as.factor(WM$History)
+# WM$Number.of.Years <- as.factor(WM$Number.of.Years)
+# WM$Fungicide.This.Year <- as.factor(WM$Fungicide.This.Year)
+# WM$Chemigation <- as.factor(WM$Chemigation)
+# WM$Applied.for.White.Mold <- as.factor(WM$Applied.for.White.Mold)
+# WM$Products <- as.factor(WM$Products)
+# WM$Timing <- as.factor(WM$Timing)
+# WM$Pre.2015.Fungicides <- as.factor(WM$Pre.2015.Fungicides)
+# WM$Number.of.Years.1 <- as.factor(WM$Number.of.Years.1)
+# WM$Products_Soybean <- as.factor(WM$Products_Soybean)
+# WM$Timing..Soybean <- as.factor(WM$Timing..Soybean)
+# WM$Notes <- as.factor(WM$Notes)
+# WM$Apparently.low.sensitiviy<- as.factor(WM$Apparently.low.sensitiviy)
+# 
+#Changing the name to be more specific 
+ levels(WM$DNA.Extraction)[levels(WM$DNA.Extraction ) == ""] <- "No DNA extraction"
+ #Changing the name to be more specific 
+ levels(WM$DNA.Extraction)[levels(WM$DNA.Extraction ) == "No"] <- "No DNA extraction"
+ #Changing the names to be more specific 
+ levels(WM$DNA.Extraction)[levels(WM$DNA.Extraction ) == "Yes"] <- "Yes DNA extraction"
+# loading USA map
+ usa <- map_data("usa")
+ # loading  USA map by states
+states <- map_data("state")
+# loading USA map by counties
+counties <- map_data("county")
+# loading Brazil map
+bra <- map_data("worldHires", "Brazil")
+# loading Mexico map
+mexico <- map_data("worldHires", "Mexico")
+
+mid_west_county <-
+  subset(
+    counties,
+    region == "nebraska" |
+      region == "wisconsin" | region == "michigan" | region == "iowa"
+  )
+
+```
+Before produce Knit run line 263 twice    
+## Backgroundd   
+Fungicide applications are essential for maintaining healthy, reliable, and high-quality agricultural products. Resistance to fungicides is an increasing threat to this effectiveness and has already been reported for 203 plant pathogenic fungi (Fungicide Resistance Action Committee 2013). Soybean is the second most important crop in the U.S. and contributes significantly to the nation’s economy with annual sales of $38.7 billion, accounting for 10 percent of total U.S. agriculture sales (Census of Agriculture 2012). In the temperate North Central soybean production areas of the United States, the white mold disease can be a significant yield limiting disease, with reported losses more than 10 million bushels per year (Peltier et al. 2012). This yield loss is significant and makes S. sclerotiorum one of the most important pathogens of soybean in the North Central U.S. In Mexico, dry common bean (_Phaseolus vulgaris_) is the second most important crop and is also significantly affected by _S._ _sclerotiorum_. For example, in the State of Sinaloa, _S._ _sclerotiorum_ causes up to 75% yield loss in dry bean and is considered the most important fungal pathogen (Apodaca et al. 2011).
+Lack of adequate levels of host resistance means that fungicides are the primary method of disease control (Bardin and Huang 2001). A major problem is that by the time fungicide resistance is detected by growers, it may be too late to prevent spread of fungicide resistance. Identifying changes in fungicide sensitivity requires knowledge of existing baseline sensitivity to each class of fungicides. Acquisition of fungicide resistance within a completely susceptible population begins with emergence and is followed by selection and adjustment phases. Few studies have addressed the emergence phase and there is a debate about the role of fungicide dose (Van Den Bosch et al. 2011). In the literature, authors speculate that rate of resistance emergence may be directly related to pathogen exposure to low-doses of fungicides (Gressel 2011), which may increase with fewer fungicide applications, such as is recommended in an Integrate Pest Management (IPM) method (Beckerman et al. 2015). This is relevant to soybean production because low-doses of fungicides are likely to occur in the field, whether due to intentional reduction of application rates or unintentionally because of incomplete spray coverage. Other factors related to risk of resistance emergence in fungal plant pathogens is the mechanism of reproduction of the fungus (sexual out-crossing, sexual selfing or asexual reproduction) and population structure of the pathogen. Knowledge of the population structure and spread of _S._ _sclerotiorum_ on soybean and dry bean is needed.  
+
+## THE FIRST PART OF DISSERTATION, Survey fungicide sensitivity of populationss of S. sclerotiorum from soybean
+#Backgroundddd
+Knowledge of baseline sensitivity of a pathogen population to fungicides is important for detection of resistance and for achieving effective disease management strategies (Brent and Holloman 2007). QoI, DMI, MBC and SDHI fungicides are used to control _S._ _sclerotiorum_ in an IPM approach in soybean and dry bean in the U.S. DMI fungicides are considered to medium risk of resistance emergence, whereas QoI, SDHI and MBC are high risk (Fungicide Resistance Action Committee 2016). MBC and dicarboximide fungicides are used for white mold in Brazil, wherein resistance to MBC fungicide, Thiophanate methyl, has been reported (Lehner et al. 2015). Fungicide resistance has also been reported in China to the MBC, Carbendazim and dicarboximide, Dimethachlon (Ma et al. 2009). Field application of fungicides in the United States on soybean show control of S. sclerotiorum is low to fair for QoI, DMI and MBC fungicides, and good for SDHI fungicides (The North Central Regional Committee on Soybean Diseases 2015). However, it is unknown whether efficacy is related to reduce sensitivity within populations under study. Therefore, the __hypothesis of this objective is that there are isolates of _S. sclerotiorum_ with low sensitivity to the most commonly used fungicides in the North Central United States.__  
+
+__Results will be used to determine whether some isolates are resistant to a given fungicide. It is expected that resistance to fungicides with single-site modes (β -tubulin assembly in mitosis, C14 demethylase in sterol biosynthesis, complex III cytochrome bc1 at Qo site and complex II succinate-dehydro-genase) of action will be more common than for multi-site fungicides__
+
+
+
+   
+## Objective   
+ 1. Select hierarchieally isolates by space according 
+
+
+### Setting some objects previuosly work with
+```{r}
+#Aready susbsitited the formID of baselines isolates for the Collection_ID  
+tested <-# #Fungicide pre-tested isolates from USA midwest including baselines and  Mexican isolates
+  c(
+    "1",
+    "118",
+    "123",
+    "12B",
+    "129",
+    "20",
+    "21",
+    "449",
+    "461",
+    "467",
+    "475",
+    "558",
+    "564",
+    "568",
+    "581",
+    "645",
+    "800",
+    "667",
+    "74-SS-1",
+    "8",
+    "87",
+    "2390" ,
+    "2386",
+    "2385",
+    "2098",
+    "2099",
+    "2100",
+    "2139",
+    "2140",
+    "2143",
+    "2220",
+    "2222",
+    "2223",
+    "2362",
+    "2320",
+    "2388",
+    "1025",
+    "1026",
+    "1027",
+    "1029",
+    "1032",
+    "1033",
+    "1870",#mexican isolates
+    "1872",#mexican isolates
+    "1884",#mexican isolates
+    "1885",#mexican isolates
+    "2453", #54c
+    "2528",#65B
+    "2449",#53b
+    "2505",# 71B
+    "2518", #64D
+    "2536", #53b
+  "2559",  #"60A",
+    "698",#there SI Production  field starts, considered as Farmers fields 
+    "699",
+    "710",
+    "711",
+    "724",
+    "725",
+    "731",
+    "732",
+    "738",
+    "739",
+    "746",
+    "751",
+    "755",
+    "756",
+    "757",
+    "764",
+    "765",
+    "771",
+    "772",
+    "786",
+    "787",
+    "811",
+    "812",
+    "813",
+    "814",
+    "817",
+    "818",
+    "851",
+    "852",
+    "853",
+    "855",
+    "858",
+    "859",
+    "860",
+    "861",
+    "862",
+    "867",
+    "870",
+    "871",
+    "877",
+    "878",
+    "884",
+    "885",
+    "891",
+    "892",
+    "896",
+    "897",
+    "901",
+    "902",
+    "905",
+    "906",
+    "908",
+    "909",
+    "911",
+    "912",
+    "914",
+    "274",
+    "307",
+    "504",
+    "505",
+    "2384",
+    "2385",
+    "2386",
+    "2388",
+    "2407",
+    "2408",
+    "2383",
+    "1058",
+    "1081",
+    "1087",
+    "1109",
+    "1127",
+    "1128",
+    "1134",
+    "1135",
+    "1139",
+    "1175",
+    "1026",
+    "1027",
+    "1029",
+    "1328",
+    "1329",
+    "1330",
+    "1331",
+    "1332",
+    "1340",
+    "1345",
+    "1365",
+    "1366",
+    "1392",
+    "1327",
+    "1502",
+    "1582",
+    "1620",
+    "1622",
+    "1541",
+    "1671",
+    "1672",
+    "1691",
+    "1692",
+    "1712",
+    "1713",
+    "1721",
+    "1722",
+    "1731",
+    "1732",
+    "1791"
+    # "1",  #since here repeated
+    #  "118",
+    #  "123",
+    #  "20",
+    #  "74-SS-2",
+    #  "8",
+    #  "2385",
+    #  "2140",
+    #  "2220",
+    #  "2222"
+  )
+mexican_isolates <- c("242","248","248a","248b","615":"632", "779","1857":"1940" )#All isolates from Mexico
+brazilian_isolates <- c("400","400a","400b","402","972",
+"973", 
+"973A",
+"973B",
+"973C",
+"973D",
+"973E",
+"974",
+"974A",
+"974B",
+"974C",
+"974D",
+"974E",
+"975",
+"975A",
+"975B",
+"975C",
+"975D",
+"975E",
+"976",
+"976A",
+"976B",
+"976C",
+"976D",
+"976E",
+"977",
+"977A",
+"977B",
+"977C",
+"977D",
+"977E",
+"978",
+"978A", 
+"978B", 
+"978C",
+"978D",
+"978E",
+"979",
+"979A",
+"979B",
+"979C",
+"979D",
+"979E", "1010":"1022","1227":"1254","2417":"2569" )#All isolates from Brazil
+baseline_isolates <- c("1","118", "123", "12B", "129", "20", "21", "449", "61", "467", "475", "558", "564", "568", "581", "645", "800", "667", "74-SS-1", "8", "87")
+# considered also baseline
+white_mold_nursery <- c( "449", "461", "467", "475", "558", "564", "568", "581", "645", "800", "667")
+survey_before_fungicides_lunched <- c("1","118", "123", "12B", "129", "20", "21",  "74-SS-1", "8", "87") # considered also baseline
+ 
+tested[duplicated(tested)]
+ tested <- tested[!duplicated(tested)]
+ unknown <- c("No_info")
+#Fungicides single mode of action
+Group_one <- c("thiophanate_methyl")
+Group_3 <- c( "prothioconazole", "tetraconazole", "flutriafol", "propiconazole", "tebuconazole", "difenoconazole")
+Group_7 <- c("fluxapyroxad", "boscalid")
+Group_11 <- c("picoxystrobin", "azoxystrobin", "fluoxastrobin", "pyraclostrobin", "trifloxystrobin")
+
+not_considered <- c("potassium phosphite")
+
+#Mixxes of fungicides IN COMERCIAL PRODUCTS
+
+ Group_3_Group_11 <-  c(
+   "flutriafol + fluoxastrobin",
+   "tetraconazole + pyraclostrobin", #there 2 fungicides: single MOA(tetraconazole) + single MOA( pyraclostrobin) #Put attention for the mixxes analyses with 2 single MOA!!
+   "propiconazole + azoxystrobin",
+"prothioconazole + trifloxystrobin", 
+"tetraconazole + fluatriafol + fluxastrobin", #there 2 fungicides: single MOA(tetraconazole) + mix( flutriafol + fluxastrobin) #Put attention for the mixxes mixxes analyses with 2 single MOA!!
+"difenoconazole + azoxystrobin")
+ 
+Group_7_Group_11 <- c(
+  "fluxapyroxad + pyraclostrobin", 
+  "pyraclostrobin + fluxapyroxad + pyraclostrobin")  #there 2 fungicides: single MOA(pyraclostrobin) + mix( fluxapyroxad + pyraclostrobin) #Put attention for the mixxes mixxes analyses with 2 single MOA!!                     
+                     
+ Group_3_not_considered <- "tebuconazole + potassium phosphite"
+ 
+ 
+  SI_Production_Field <- c( 698:741, 743:744, 746:760, 762: 778, 
+786: 797, 810:819, 848: 855, 858: 914)
+  SI_Screening_Nursery_Field <- c(444:454, 457:465, 467, 469, 472:477, 555: 582, 584: 601, 611, 636:670, 673:681,691:694, 798:809, 824: 833 , 836:847)# also taking into account WM Monitor 
+  #780: 785 Ask Becky about Carlos Urrea samples better not take into conideration because there are mostly greenhouses
+```
+
+##White Mold selection from USA midwest  
+###Data wrangling
+```{r}
+wm1 <-
+  WM %>% select(
+    Collection_ID,
+    Host, 
+    State,
+    Field,
+    Year,
+    Origin,
+    long,
+    lat,
+    hyphal_tip..ht.,
+    DNA.Extraction,
+    County,
+    Country,
+    Serial_agar_dilution_for_creating_the_model_..N.20.,
+    Form.ID, Fungicide_current_season, molecule.s._current_season,  Fungicide_previous_seasons, molecule.s._previous_seasons, Applications, Rate#, active.ingredient_previous_seasons
+      )# Selecting  the most important columns so far
+# Check this very well becuase it must include the ones used on Serial dilution and DC
+wm1_ <-  wm1 %>%
+  mutate(Fungicide_status = ifelse(Collection_ID  %in% tested,"tested", "no_tested")) #%>% Creating a new column based wheather or not funcides pretested
+ 
+levels(wm1_$Origin) = c("" ,  "farmer fields", "fungicide field trials", "baseline isolates", "WM nurseries")# named baselines so far from Survey_Nursery tested
+
+levels(wm1_$Origin )[levels(wm1_$Origin ) == "trial"] <- "fungicide field trials"#Changing the name to be more specific
+levels(wm1_$Origin  )[levels(wm1_$Origin ) == "Survey"] <- "farmer fields"#Changing the name to be more specific
+   
+wm1_[(which(wm1_$Collection_ID %in% SI_Production_Field)), 6] <- "farmer fields"
+
+wm1_[(which(wm1_$Collection_ID %in% baseline_isolates)), 6] <- "baseline isolates"
+
+wm1_[(which(wm1_$Collection_ID %in% SI_Screening_Nursery_Field )), 6] <- "WM nurseries"
+
+wm1_$Origin<- as.factor(wm1_$Origin)
+  
+levels(wm1_$Fungicide_current_season)[levels(wm1_$Fungicide_current_season) == "No_info"] <- "unknown"
+
+levels(wm1_$molecule.s._current_season)[levels(wm1_$molecule.s._current_season) == ""] <- "unknown"
+
+levels(wm1_$Fungicide_previous_seasons)[levels(wm1_$Fungicide_previous_seasons) == ""] <- "unknown"
+
+levels(wm1_$molecule.s._previous_seasons)[levels(wm1_$molecule.s._previous_seasons) == ""] <- "unknown"
+
+wm1_ <- wm1_%>%
+  mutate(
+    Group_MOA_current_season = case_when(
+       molecule.s._current_season%in% Group_one ~ "Group_one",# filtering and naming "the name of the group" in case of in
+       molecule.s._current_season%in% Group_3~ "Group_3",
+       molecule.s._current_season%in% Group_7 ~ "Group_7",
+       molecule.s._current_season%in% Group_11 ~ "Group_11", molecule.s._current_season%in% Group_3_Group_11~ "Group_3&Group_11",
+       molecule.s._current_season%in% Group_7_Group_11~ "Group_7&Group_11",
+       molecule.s._current_season%in% Group_3_not_considered~ "Group_3&not_considered",
+       molecule.s._current_season%in% unknown~ "unknown",
+             TRUE ~ "unknown"# in case of not, naming "not_selected""
+    )
+  )   %>%
+  mutate(
+    Group_MOA_previous_seasons = case_when(
+       molecule.s._previous_seasons%in% Group_one ~ "Group_one",# filtering and naming "the name of the group" in case of in
+       molecule.s._previous_seasons%in% Group_3~ "Group_3",
+       molecule.s._previous_seasons%in% Group_7 ~ "Group_7",
+       molecule.s._previous_seasons%in% Group_11 ~ "Group_11", molecule.s._previous_seasons%in% Group_3_Group_11~ "Group_3&Group_11",
+       molecule.s._previous_seasons%in% Group_7_Group_11~ "Group_7&Group_11",
+       molecule.s._previous_seasons%in% Group_3_not_considered~ "Group_3&not_considered",
+      molecule.s._previous_seasons%in% unknown~ "unknown",TRUE ~ "unknown"# in case of not, naming "not_selected""
+    )
+  )   
+            
+wm1_$Group_MOA_current_season <- as.factor(wm1_$Group_MOA_current_season)
+
+wm1_$Group_MOA_previous_seasons <- as.factor(wm1_$Group_MOA_previous_seasons)
+
+wm1_$Fungicide_status <- as_factor(wm1_$Fungicide_status) 
+```
+ 
+
+```{r `}
+  
+drybeans_tested <- wm1_%>% select(Collection_ID, State, County, Country,Field, Origin, Year, Fungicide_status, Host, Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter(Fungicide_status == "tested", Host== "drybeans") 
+levels(drybeans_tested$Group_MOA_current_season)
+levels(drybeans_tested$Group_MOA_previous_seasons)
+
+levels(drybeans_tested$Group_MOA_current_season) = c("Group_11" , "Group_3", "Group_3&Group_11", "Group_3&Group_7", "Group_3&not_considered", "Group_7", "Group_7&Group_11","Group_one", "unknown", "no fungicide" )
+
+levels(drybeans_tested$Group_MOA_previous_seasons) = c("Group_11" ,  "Group_3", "Group_3&Group_11", "Group_7&Group_11", "Group_one", "unknown", "no fungicide")
+
+drybeans_tested$Group_MOA_current_season[drybeans_tested$Origin%in% c("baseline isolates")] <- "no fungicide"
+drybeans_tested$Group_MOA_previous_seasons[drybeans_tested$Origin%in% c("baseline isolates")] <- "no fungicide"
+
+drybeans_tested2 <-
+drybeans_tested %>% group_by(State,
+Country,
+Origin,
+Group_MOA_current_season,
+Group_MOA_previous_seasons) %>%  summarize(N_isolates = n()) %>% arrange(desc(N_isolates)) %>%
+ungroup() %>% add_row(State = "Total", N_isolates = sum(.$N_isolates)) %>% rename(
+  "N isolates" = N_isolates,
+  "MOA current season" = Group_MOA_current_season,
+  "MOA previous seasons" = Group_MOA_previous_seasons
+  ) %>% kable(format = "markdown") %>%  kable_styling(
+  bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+  full_width = F,
+  position = "center"
+  ) %>%  write2pdf("drybean_isolates_pretest.pdf")
+
+
+#####################
+soybeans_tested <- wm1_%>% select(Collection_ID, State, County, Country, Origin, Year, Fungicide_status, Host, Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter(Fungicide_status == "tested", Host== "soybeans") 
+levels(soybeans_tested$Group_MOA_current_season)
+levels(soybeans_tested$Group_MOA_previous_seasons)
+
+levels(soybeans_tested$Group_MOA_current_season) = c("Group_11" , "Group_3", "Group_3&Group_11", "Group_3&not_considered", "Group_7", "Group_7&Group_11","Group_one", "unknown", "no fungicide" )
+
+levels(soybeans_tested$Group_MOA_previous_seasons) = c("Group_11" ,  "Group_3", "Group_3&Group_11", "Group_7&Group_11", "Group_one", "unknown", "no fungicide")
+
+soybeans_tested$Group_MOA_current_season[soybeans_tested$Origin%in% c("baseline isolates")] <- "no fungicide"
+soybeans_tested$Group_MOA_previous_seasons[soybeans_tested$Origin%in% c("baseline isolates")] <- "no fungicide"
+
+
+#before running take out this "Group_3&Group_7", not more exist
+soybeans_tested2<- soybeans_tested%>% group_by( State,Country,  Origin,  Group_MOA_current_season,  Group_MOA_previous_seasons) %>%  summarize(N_isolates=n())%>% arrange(desc(N_isolates)) %>%ungroup() %>% mutate(Group_MOA_current_season = recode(Group_MOA_current_season, Group_11 = "Group 11" , Group_7= "Group 7", 'Group_3&Group_7'= "Group 3 & Group 7", 'Group_7&Group_11'= "Group 7 & Group 11", Group_one= "Group 1")) %>% mutate(Group_MOA_previous_seasons = recode(Group_MOA_previous_seasons,Group_11 = "Group 11", 'Group_3&Group_7'= "Group 3 & Group 7" ))%>% add_row(State = "Total", N_isolates = sum(.$N_isolates)) %>% rename( "N isolates" = N_isolates, "MOA current season" = Group_MOA_current_season,  "MOA previous seasons" =Group_MOA_previous_seasons)%>% kable(format = "markdown") %>%  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = F, position = "center") %>%  write2pdf("soybean_isolates_pretest.pdf")
+
+drybeans_tested2
+```
+
+```{r}
+drybeans_no_tested <- wm1_%>% select(Collection_ID, State, County,Field,Country, Origin, Year, Fungicide_status, Host, Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter(Fungicide_status == "no_tested", Host!= "soybeans", Origin=="farmer fields", 
+# States according to the Sydney's poster                                                 
+State== "MI"| State== "ND"| State== "WA"| State== "NE"| State== "CO"| State== "OR"| State== "CA"| State== "MN"| State== "WI"| State== "ID"| State== "NY") 
+
+#Here sometimes because the way that Iam reading read.csv I have to make a droplevels every each object and maybe having problems to not make NA a factor as following 
+drybeans_no_tested$Field <- as.character(drybeans_no_tested$Field)
+drybeans_no_tested$Field <- as.factor(drybeans_no_tested$Field)
+droplevels(drybeans_no_tested$Field)
+# Creating a new table without filtering by number of isolate per field
+drybeans_no_tested %>% filter(Field=="WM_production_1"|                         Field=="WM_production_2"|
+       Field=="WM_production_3"|
+       Field=="WM_production_4"|
+       Field=="WM_production_5"|
+       Field=="WM_production_6"|
+       Field=="WM_production_7"|
+       Field=="WM_production_8"|
+       Field=="WM_production_9"|
+       Field=="WM_production_10"|
+       Field=="WM_production_11"|
+       Field=="WM_production_12"|
+       Field=="WM_production_13"|
+       Field=="WM_production_14"|
+       Field=="WM_production_15"|
+       Field=="WM_production_16"|
+       Field=="WM_production_17"|
+       Field=="WM_production_18"|
+       Field=="WM_production_19"|
+       Field=="WM_production_20"|
+       Field=="WM_production_21"|
+       Field=="WM_production_22"|
+       Field=="WM_production_23"|
+       Field=="WM_production_24"|
+       Field=="WM_production_25"|
+       Field=="WM_production_26"|
+       Field=="WM_production_27"|
+       Field=="WM_production_28"|
+       Field=="WM_production_29") %>%  group_by( State, Year, Field) %>%  summarize(N_isolates=n())%>% arrange(desc(N_isolates))%>%ungroup() %>% add_row(State = "Total", N_isolates = sum(.$N_isolates)) %>% kable(format = "markdown") %>%  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = F, position = "center") %>%  write2pdf("new_table.pdf")
+
+# filtering by number of isolates per field, >9
+dos <- drybeans_no_tested %>% group_by(Field) %>% filter(n()>9) %>% ungroup()
+droplevels(dos$Field)
+
+dos <- drybeans_no_tested %>% filter(Field=="WM_production_1"| Field=="WM_production_9"| Field=="WM_production_10")
+#creating a new table
+dos %>%  group_by( State, Year, Field) %>%  summarize(N_isolates=n())%>% arrange(State)%>%ungroup() %>% add_row(State = "Total", N_isolates = sum(.$N_isolates)) %>% kable(format = "markdown") %>%  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = F, position = "center") %>%  write2pdf("drybean_isolates_notested>9isolatesperfield.pdf")
+
+# filtering by number of isolates per field, >3
+tres <- drybeans_no_tested %>% group_by(Field) %>% filter(n()>3) %>% ungroup()
+droplevels(tres$Field)
+
+tres <- drybeans_no_tested %>% filter(Field=="WM_production_1"| Field=="WM_production_2"| Field=="WM_production_3"|Field=="WM_production_4"|Field=="WM_production_5"|Field=="WM_production_6"|Field=="WM_production_7"|Field=="WM_production_9"|Field=="WM_production_10"|Field=="WM_production_21"|Field=="WM_production_23"|Field=="WM_production_24"|Field=="WM_production_25"|Field=="WM_production_27")
+#creating a new table
+
+tres %>%  group_by( State, Year, Field) %>%  summarize(N_isolates=n())%>% arrange(State)%>%ungroup() %>% add_row(State = "Total", N_isolates = sum(.$N_isolates)) %>% kable(format = "markdown") %>%  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = F, position = "center") %>%  write2pdf("drybean_isolates_notested>3isolatesperfield.pdf")
+
+#######Just to see which EXtra State, i.e. dont taking to accoount just the states of Sydney;poser
+
+drybeans_no_tested_dos <- wm1_%>% select(Collection_ID, State, County,Field,Country, Origin, Year, Fungicide_status, Host, Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter(Fungicide_status == "no_tested", Host!= "soybeans")
+#Here sometimes becaus the way that Iam reading read.csv I have to make a droplevels every each object and maybe having problems to not make NA a factor as following 
+drybeans_no_tested$Field <- as.character(drybeans_no_tested$Field)
+drybeans_no_tested$Field <- as.factor(drybeans_no_tested$Field)
+droplevels(drybeans_no_tested$Field)
+
+# filtering by number of isolates per field, >9
+dosdos <- drybeans_no_tested_dos %>% group_by(Field) %>% filter(n()>9) %>% ungroup()
+droplevels(dosdos$Field)
+
+dosdos <- drybeans_no_tested %>% filter(Field=="WM_production_1"| Field=="WM_production_9"| Field=="WM_production_10"|Field=="WM_production_20"|Field=="WM_production_21")
+#creating new table
+dosdos %>%  group_by( State, Year, Field) %>%  summarize(N_isolates=n())%>% arrange(State)%>%ungroup() %>% add_row(State = "Total", N_isolates = sum(.$N_isolates)) 
+# filtering by number of isolates per field, >3
+trestres <- drybeans_no_tested_dos %>% group_by(Field) %>% filter(n()>3) %>% ungroup()
+droplevels(trestres$Field)
+#creating new table
+trestres <- drybeans_no_tested %>% filter(Field=="WM_production_1"| Field=="WM_production_2"| Field=="WM_production_3"|Field=="WM_production_4"|Field=="WM_production_5"|Field=="WM_production_6"|Field=="WM_production_7"|Field=="WM_production_9"|Field=="WM_production_10"|Field=="WM_production_21"|Field=="WM_production_23"|Field=="WM_production_24"|Field=="WM_production_25"|Field=="WM_production_27")
+
+trestres %>%  group_by( State, Year, Field) %>%  summarize(N_isolates=n())%>% arrange(State)%>%ungroup() %>% add_row(State = "Total", N_isolates = sum(.$N_isolates))
+
+####################
+mycosphaerella <-
+  drybeans_no_tested %>% 
+  filter(Field=="WM_production_1"|
+                              Field=="WM_production_2"|
+                                Field=="WM_production_3"|
+                                Field=="WM_production_4"|
+                                Field=="WM_production_5"|
+                                Field=="WM_production_6"|
+                                Field=="WM_production_7"|
+                                Field=="WM_production_8"|
+                                Field=="WM_production_9"|
+                                Field=="WM_production_10"|
+                                Field=="WM_production_11"|
+                                Field=="WM_production_12"|
+                                Field=="WM_production_13"|
+                                Field=="WM_production_14"|
+                                Field=="WM_production_15"|
+                                Field=="WM_production_16"|
+                                Field=="WM_production_17"|
+                                Field=="WM_production_18"|
+                                Field=="WM_production_19"|
+                                Field=="WM_production_20"|
+                                Field=="WM_production_21"|
+                                Field=="WM_production_22"|
+                                Field=="WM_production_23"|
+                                Field=="WM_production_24"|
+                                Field=="WM_production_25"|
+                                Field=="WM_production_26"|
+                                Field=="WM_production_27"|
+                                Field=="WM_production_28"|
+                                Field=="WM_production_29"  
+  ) %>% group_by(State, Year, Field) %>% summarize(N_isolates_notested = n()) %>% arrange(desc(N_isolates_notested)) %>% ungroup()  
+
+############
+drybeans_testedd <- wm1_%>% select(Collection_ID, State, County, Country, Field, Origin, Year, Fungicide_status, Host, Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter(Fungicide_status == "tested", Host!= "soybeans", State== "MI"| State== "ND"| 
+  ## States according to the Sydney's poster       
+    State== "WA"| State== "NE"| State== "CO"| State== "OR"| State== "CA"| State== "MN"| State== "WI"| State== "ID"| State== "NY") 
+
+drybeans_testedd$Field <- as.character(drybeans_testedd$Field)
+
+drybeans_testedd$Field <- as.factor(drybeans_testedd$Field)
+droplevels(drybeans_testedd$Field)
+
+ ello <-
+  drybeans_testedd %>% 
+  filter(Field=="WM_production_1"|
+                              Field=="WM_production_2"|
+                                Field=="WM_production_3"|
+                                Field=="WM_production_4"|
+                                Field=="WM_production_5"|
+                                Field=="WM_production_6"|
+                                Field=="WM_production_7"|
+                                Field=="WM_production_8"|
+                                Field=="WM_production_9"|
+                                Field=="WM_production_10"|
+                                Field=="WM_production_11"|
+                                Field=="WM_production_12"|
+                                Field=="WM_production_13"|
+                                Field=="WM_production_14"|
+                                Field=="WM_production_15"|
+                                Field=="WM_production_16"|
+                                Field=="WM_production_17"|
+                                Field=="WM_production_18"|
+                                Field=="WM_production_19"|
+                                Field=="WM_production_20"|
+                                Field=="WM_production_21"|
+                                Field=="WM_production_22"|
+                                Field=="WM_production_23"|
+                                Field=="WM_production_24"|
+                                Field=="WM_production_25"|
+                                Field=="WM_production_26"|
+                                Field=="WM_production_27"|
+                                Field=="WM_production_28"|
+                                Field=="WM_production_29"|
+  
+Field=="WM_production_30"  
+  ) %>% group_by(State, Year, Field) %>% summarize(N_isolates_tested = n()) %>% arrange(desc(N_isolates_tested)) %>% ungroup()  
+
+ #creating new table
+drybeans_testedd %>% 
+  filter(Field=="WM_production_1"|
+                              Field=="WM_production_2"|
+                                Field=="WM_production_3"|
+                                Field=="WM_production_4"|
+                                Field=="WM_production_5"|
+                                Field=="WM_production_6"|
+                                Field=="WM_production_7"|
+                                Field=="WM_production_8"|
+                                Field=="WM_production_9"|
+                                Field=="WM_production_10"|
+                                Field=="WM_production_11"|
+                                Field=="WM_production_12"|
+                                Field=="WM_production_13"|
+                                Field=="WM_production_14"|
+                                Field=="WM_production_15"|
+                                Field=="WM_production_16"|
+                                Field=="WM_production_17"|
+                                Field=="WM_production_18"|
+                                Field=="WM_production_19"|
+                                Field=="WM_production_20"|
+                                Field=="WM_production_21"|
+                                Field=="WM_production_22"|
+                                Field=="WM_production_23"|
+                                Field=="WM_production_24"|
+                                Field=="WM_production_25"|
+                                Field=="WM_production_26"|
+                                Field=="WM_production_27"|
+                                Field=="WM_production_28"|
+                                Field=="WM_production_29"|
+  
+Field=="WM_production_30"  
+  ) %>% group_by(State, Year, Field) %>% summarize(N_isolates = n()) %>% arrange(desc(N_isolates)) %>% ungroup() %>% add_row(State = "Total", N_isolates = sum(.$N_isolates)) %>% kable(format = "markdown")  %>%  write2pdf("new_table2.pdf")# quiet = TRUE)
+  
+# HOW Sydney asked with two columns
+
+cercospora <-
+  mycosphaerella %>% inner_join(hello) %>% add_row(
+    State = "ND",
+    Year = "2007",
+    Field = "WM_production_3",
+    N_isolates_notested = 7,
+    N_isolates_tested = 0,
+    .before = 4
+  )%>% add_row(
+    State = "MI",
+    Year = "2009",
+    Field = "WM_production_14",
+    N_isolates_notested = 1,
+    N_isolates_tested = 0,
+    .before = 22
+  )%>% add_row(
+    State = "MI",
+    Year = "2009",
+    Field = "WM_production_15",
+    N_isolates_notested = 1,
+    N_isolates_tested = 0,
+    .before = 22
+  )%>% add_row(
+    State = "MI",
+    Year = "2009",
+    Field = "WM_production_16",
+    N_isolates_notested = 1,
+    N_isolates_tested = 0,
+    .before = 22
+  )%>% add_row(
+    State = "MI",
+    Year = "2009",
+    Field = "WM_production_19",
+    N_isolates_notested = 1,
+    N_isolates_tested = 0,
+    .before = 22
+  )%>% add_row(
+    State = "MI",
+    Year = "2009",
+    Field = "WM_production_17",
+    N_isolates_notested = 0,
+    N_isolates_tested = 1,
+    .before = 22
+  )%>% add_row(
+    State = "MI",
+    Year = "2009",
+    Field = "WM_production_18",
+    N_isolates_notested = 0,
+    N_isolates_tested = 2,
+    .before = 22
+  )%>% add_row(
+    State = "MI",
+    Year = "2009",
+    Field = "WM_production_20",
+    N_isolates_notested = 0,
+    N_isolates_tested = 1,
+    .before = 22
+  )%>% add_row(
+    State = "ND",
+    Year = "2010",
+    Field = "WM_production_30",
+    N_isolates_notested = 0,
+    N_isolates_tested = 1,
+    .before = 22
+  )%>% add_row(
+    State = "Total",
+    N_isolates_tested = sum(.$N_isolates_tested),
+    N_isolates_notested = sum(.$N_isolates_notested)
+  ) %>%  kable(format = "markdown")  %>%  write2pdf("new_table3.pdf")
+
+```
+#  List for Cristian
+```{r}
+ drybeans_no_tested %>% filter(Field=="WM_production_1"|
+                              Field=="WM_production_2"|
+                                Field=="WM_production_3"|
+                                Field=="WM_production_4"|
+                                Field=="WM_production_5"|
+                                Field=="WM_production_6"|
+                                Field=="WM_production_7"|
+                                Field=="WM_production_8"|
+                                Field=="WM_production_9"|
+                                Field=="WM_production_10"|
+                                Field=="WM_production_11"|
+                                Field=="WM_production_12"|
+                                Field=="WM_production_13"|
+                                Field=="WM_production_18"|
+                                Field=="WM_production_20"|
+                                Field=="WM_production_21"|
+                                Field=="WM_production_22"|
+                                Field=="WM_production_23"|
+                                Field=="WM_production_24"|
+                                Field=="WM_production_25"|
+                                Field=="WM_production_26"|
+                                Field=="WM_production_27"|
+                                Field=="WM_production_28") %>%  group_by( Collection_ID, Field) %>%  summarize() %>% 
+write_csv("tableforCristiann.csv")
+```
+
+```{r}
+b <-
+  wm1_ %>% select(
+    Collection_ID,
+    Origin,
+    Year,
+    State,
+    County,
+    Field,
+    Group_MOA_current_season,
+    Group_MOA_previous_seasons
+  ) %>% filter(
+    Origin == "farmer fields",
+    Field != "NA",
+    Group_MOA_current_season != "unknown",
+    !Field == "WM_nursery_1" |
+      !Field ==
+      "WM_nursery_2" |
+      !Field ==
+      "WM_nursery_3" |
+      !Field ==
+      "WM_nursery_4" |
+      !Field ==
+      "WM_nursery_5" |
+      !Field ==
+      "WM_nursery_6" |
+      !Field ==
+      "WM_nursery_7" |
+      !Field ==
+      "WM_nursery_8" |
+      !Field ==
+      "WM_nursery_9" |
+      !Field ==
+      "WM_nursery_10" |
+      !Field ==
+      "WM_nursery_11" |
+      !Field ==
+      "WM_nursery_12" |
+      !Field ==
+      "WM_nursery_13" |
+      !Field ==
+      "WM_nursery_14" |
+      !Field ==
+      "WM_nursery_15" |
+      !Field ==
+      "WM_nursery_16" |
+      !Field ==
+      "WM_nursery_17" |
+      !Field ==
+      "WM_nursery_18" |
+      !Field ==
+      "WM_nursery_19"
+  ) %>% select(Collection_ID,
+               Year,
+               State,
+               County,
+               Field,
+               Group_MOA_current_season,
+               Group_MOA_previous_seasons) %>%  
+               arrange( desc(Group_MOA_current_season),Group_MOA_previous_seasons,State,County, Field, Year, Collection_ID ) %>% 
+               kable(format = "markdown") %>%  
+               write2pdf("new_table3.pdf")
+
+#Summarizing
+b_ <-   wm1_ %>% select(
+Collection_ID,
+Origin,
+Year,
+State,
+County,
+Field,
+Group_MOA_current_season,
+Group_MOA_previous_seasons
+) %>% filter(
+Origin == "farmer fields",
+Field != "NA",
+Group_MOA_current_season != "unknown",
+!Field == "WM_nursery_1" |
+!Field ==
+"WM_nursery_2" |
+!Field ==
+"WM_nursery_3" |
+!Field ==
+"WM_nursery_4" |
+!Field ==
+"WM_nursery_5" |
+!Field ==
+"WM_nursery_6" |
+!Field ==
+"WM_nursery_7" |
+!Field ==
+"WM_nursery_8" |
+!Field ==
+"WM_nursery_9" |
+!Field ==
+"WM_nursery_10" |
+!Field ==
+"WM_nursery_11" |
+!Field ==
+"WM_nursery_12" |
+!Field ==
+"WM_nursery_13" |
+!Field ==
+"WM_nursery_14" |
+!Field ==
+"WM_nursery_15" |
+!Field ==
+"WM_nursery_16" |
+!Field ==
+"WM_nursery_17" |
+!Field ==
+"WM_nursery_18" |
+!Field ==
+"WM_nursery_19"
+) %>% select(Collection_ID,
+Year,
+State,
+County,
+Field,
+Group_MOA_current_season,
+Group_MOA_previous_seasons) %>% group_by(Year,State, County, Field, Group_MOA_current_season) %>% 
+  summarize(N_isolates=n())%>% 
+  arrange(desc(N_isolates)) %>%
+kable(format = "markdown") %>%
+write2pdf("new_table4.pdf")
+
+# hypothesis one ----------------------------------------------------------
+
+# masking and filterring from previous "b" object
+
+wm1_1 <- wm1_ %>%  select(
+  Collection_ID,
+  Year,
+  State,
+  County,
+  Field,
+  Group_MOA_current_season,
+  Group_MOA_previous_seasons)
+  #Creating the table and now taking out also previous season Unknown because It does not help me
+c <- wm1_1[unlist( b),]
+c_c <-  c %>% filter( Group_MOA_previous_seasons != "unknown") %>% 
+arrange( desc(Group_MOA_previous_seasons),State,County, Field, Year, Collection_ID ) %>% 
+  kable(format = "markdown") %>%  
+  write2pdf("new_table5.pdf")
+##Summarizing
+c_c_c <-  c %>% filter( Group_MOA_previous_seasons != "unknown") %>% 
+  group_by(Year,State, County, Field, Group_MOA_current_season, Group_MOA_previous_seasons) %>% 
+  summarize(N_isolates=n())%>% 
+  arrange(desc(N_isolates)) %>%
+  kable(format = "markdown") %>%  
+  write2pdf("new_table6.pdf")
+
+```
+
+```{r}
+
+```
+
