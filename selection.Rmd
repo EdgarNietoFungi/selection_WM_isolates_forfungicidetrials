@@ -806,7 +806,7 @@ cercospora <-
     State = "Total",
     N_isolates_tested = sum(.$N_isolates_tested),
     N_isolates_notested = sum(.$N_isolates_notested)
-  ) %>%  kable(format = "markdown")  %>%  write2pdf("new_table3.pdf")
+  ) %>%  kable(format = "markdown")  %>%  #write2pdf("new_table3.pdf")
 
 ```
 #  List for Cristian
@@ -990,8 +990,75 @@ c_c_c <-  c %>% filter( Group_MOA_previous_seasons != "unknown") %>%
   write2pdf("new_table6.pdf")
 
 ```
-
+# Using function
 ```{r}
-
+get_range <- function(mynumber) {
+  bb <- range(mynumber)
+  cc <- max(bb)
+  dd <- min(bb)
+  return(data.frame(high_ID = cc, low_ID = dd))
+}
+```
+# Another questionfrom Sydney about Neraska aisoalte sgroup 3
+```{r}
+wm1_ %>% select(
+    Collection_ID,
+    Origin,
+    Year,
+    State,
+    County,
+    Field,
+    Group_MOA_current_season,
+    Group_MOA_previous_seasons
+) %>% filter(
+    Origin == "farmer fields",
+    Field != "NA",
+    Group_MOA_current_season != "unknown",
+    !Field == "WM_nursery_1" |
+        !Field ==
+        "WM_nursery_2" |
+        !Field ==
+        "WM_nursery_3" |
+        !Field ==
+        "WM_nursery_4" |
+        !Field ==
+        "WM_nursery_5" |
+        !Field ==
+        "WM_nursery_6" |
+        !Field ==
+        "WM_nursery_7" |
+        !Field ==
+        "WM_nursery_8" |
+        !Field ==
+        "WM_nursery_9" |
+        !Field ==
+        "WM_nursery_10" |
+        !Field ==
+        "WM_nursery_11" |
+        !Field ==
+        "WM_nursery_12" |
+        !Field ==
+        "WM_nursery_13" |
+        !Field ==
+        "WM_nursery_14" |
+        !Field ==
+        "WM_nursery_15" |
+        !Field ==
+        "WM_nursery_16" |
+        !Field ==
+        "WM_nursery_17" |
+        !Field ==
+        "WM_nursery_18" |
+        !Field ==
+        "WM_nursery_19"
+) %>% select(Collection_ID,
+             Year,
+             State,
+             County,
+             Field,
+             Group_MOA_current_season,
+             Group_MOA_previous_seasons) %>% filter(Group_MOA_current_season== "Group_3")%>% group_by(Year,State, County, Field) %>% 
+    summarize(N_isolates=n())%>% 
+    arrange(desc(N_isolates)) %>% kable() %>% #write2pdf("Nebraska_isolates_Group3_MOA.pdf")
 ```
 
