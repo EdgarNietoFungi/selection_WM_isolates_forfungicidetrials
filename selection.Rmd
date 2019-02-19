@@ -495,8 +495,7 @@ wm1_$Fungicide_status <- as_factor(wm1_$Fungicide_status)
  
 
 ```{r `}
-  
-drybeans_tested <- wm1_%>% select(Collection_ID, State, County, Country,Field, Origin, Year, Fungicide_status, Host, Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter(Fungicide_status == "tested", Host== "drybeans") 
+  drybeans_tested <- wm1_%>% select(Collection_ID, State, County, Country,Field, Origin, Year, Fungicide_status, Host, Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter(Fungicide_status == "tested", Host== "drybeans") 
 levels(drybeans_tested$Group_MOA_current_season)
 levels(drybeans_tested$Group_MOA_previous_seasons)
 
@@ -517,11 +516,11 @@ ungroup() %>% add_row(State = "Total", N_isolates = sum(.$N_isolates)) %>% renam
   "N isolates" = N_isolates,
   "MOA current season" = Group_MOA_current_season,
   "MOA previous seasons" = Group_MOA_previous_seasons
-  ) %>% kable(format = "markdown") %>%  kable_styling(
-  bootstrap_options = c("striped", "hover", "condensed", "responsive"),
-  full_width = F,
-  position = "center"
-  ) %>%  write2pdf("drybean_isolates_pretest.pdf")
+   )# %>% kable(format = "markdown") %>%  kable_styling(
+  # bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+  # full_width = F,
+  # position = "center"
+  # ) #%>%  write2pdf("drybean_isolates_pretest.pdf")
 
 
 #####################
@@ -538,7 +537,9 @@ soybeans_tested$Group_MOA_previous_seasons[soybeans_tested$Origin%in% c("baselin
 
 
 #before running take out this "Group_3&Group_7", not more exist
-soybeans_tested2<- soybeans_tested%>% group_by( State,Country,  Origin,  Group_MOA_current_season,  Group_MOA_previous_seasons) %>%  summarize(N_isolates=n())%>% arrange(desc(N_isolates)) %>%ungroup() %>% mutate(Group_MOA_current_season = recode(Group_MOA_current_season, Group_11 = "Group 11" , Group_7= "Group 7", 'Group_3&Group_7'= "Group 3 & Group 7", 'Group_7&Group_11'= "Group 7 & Group 11", Group_one= "Group 1")) %>% mutate(Group_MOA_previous_seasons = recode(Group_MOA_previous_seasons,Group_11 = "Group 11", 'Group_3&Group_7'= "Group 3 & Group 7" ))%>% add_row(State = "Total", N_isolates = sum(.$N_isolates)) %>% rename( "N isolates" = N_isolates, "MOA current season" = Group_MOA_current_season,  "MOA previous seasons" =Group_MOA_previous_seasons)%>% kable(format = "markdown") %>%  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = F, position = "center") %>%  write2pdf("soybean_isolates_pretest.pdf")
+soybeans_tested2 <-  soybeans_tested%>% group_by( State,Country,  Origin,  Group_MOA_current_season,  Group_MOA_previous_seasons) %>%  summarize(N_isolates=n())%>% arrange(desc(N_isolates)) %>%ungroup() %>% mutate(Group_MOA_current_season = recode(Group_MOA_current_season, Group_11 = "Group 11" , Group_7= "Group 7", 'Group_3&Group_7'= "Group 3 & Group 7", 'Group_7&Group_11'= "Group 7 & Group 11", Group_one= "Group 1")) %>% mutate(Group_MOA_previous_seasons = recode(Group_MOA_previous_seasons,Group_11 = "Group 11", 'Group_3&Group_7'= "Group 3 & Group 7" ))%>% add_row(State = "Total", N_isolates = sum(.$N_isolates)) %>% rename( "N isolates" = N_isolates, "MOA current season" = Group_MOA_current_season,  "MOA previous seasons" =Group_MOA_previous_seasons)
+# %>% kable(format = "markdown") %>%  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = F, position = "center")
+# %>% write2pdf("soybean_isolates_pretest.pdf")
 
 drybeans_tested2
 ```
@@ -580,7 +581,8 @@ drybeans_no_tested %>% filter(Field=="WM_production_1"|                         
        Field=="WM_production_26"|
        Field=="WM_production_27"|
        Field=="WM_production_28"|
-       Field=="WM_production_29") %>%  group_by( State, Year, Field) %>%  summarize(N_isolates=n())%>% arrange(desc(N_isolates))%>%ungroup() %>% add_row(State = "Total", N_isolates = sum(.$N_isolates)) %>% kable(format = "markdown") %>%  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = F, position = "center") %>%  write2pdf("new_table.pdf")
+       Field=="WM_production_29") %>%  group_by( State, Year, Field) %>%  summarize(N_isolates=n())%>% arrange(desc(N_isolates))%>%ungroup() %>% add_row(State = "Total", N_isolates = sum(.$N_isolates)) 
+# %>% kable(format = "markdown") %>%  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = F, position = "center") #%>%  write2pdf("new_table.pdf")
 
 # filtering by number of isolates per field, >9
 dos <- drybeans_no_tested %>% group_by(Field) %>% filter(n()>9) %>% ungroup()
@@ -588,7 +590,8 @@ droplevels(dos$Field)
 
 dos <- drybeans_no_tested %>% filter(Field=="WM_production_1"| Field=="WM_production_9"| Field=="WM_production_10")
 #creating a new table
-dos %>%  group_by( State, Year, Field) %>%  summarize(N_isolates=n())%>% arrange(State)%>%ungroup() %>% add_row(State = "Total", N_isolates = sum(.$N_isolates)) %>% kable(format = "markdown") %>%  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = F, position = "center") %>%  write2pdf("drybean_isolates_notested>9isolatesperfield.pdf")
+dos %>%  group_by( State, Year, Field) %>%  summarize(N_isolates=n())%>% arrange(State)%>%ungroup() %>% add_row(State = "Total", N_isolates = sum(.$N_isolates)) 
+# %>% kable(format = "markdown") %>%  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = F, position = "center") %>%  write2pdf("drybean_isolates_notested>9isolatesperfield.pdf")
 
 # filtering by number of isolates per field, >3
 tres <- drybeans_no_tested %>% group_by(Field) %>% filter(n()>3) %>% ungroup()
@@ -597,9 +600,11 @@ droplevels(tres$Field)
 tres <- drybeans_no_tested %>% filter(Field=="WM_production_1"| Field=="WM_production_2"| Field=="WM_production_3"|Field=="WM_production_4"|Field=="WM_production_5"|Field=="WM_production_6"|Field=="WM_production_7"|Field=="WM_production_9"|Field=="WM_production_10"|Field=="WM_production_21"|Field=="WM_production_23"|Field=="WM_production_24"|Field=="WM_production_25"|Field=="WM_production_27")
 #creating a new table
 
-tres %>%  group_by( State, Year, Field) %>%  summarize(N_isolates=n())%>% arrange(State)%>%ungroup() %>% add_row(State = "Total", N_isolates = sum(.$N_isolates)) %>% kable(format = "markdown") %>%  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = F, position = "center") %>%  write2pdf("drybean_isolates_notested>3isolatesperfield.pdf")
+tres %>%  group_by( State, Year, Field) %>%  summarize(N_isolates=n())%>% arrange(State)%>%ungroup() %>% add_row(State = "Total", N_isolates = sum(.$N_isolates))
+# %>% kable(format = "markdown") %>%  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = F, position = "center") 
+#%>%  write2pdf("drybean_isolates_notested>3isolatesperfield.pdf")
 
-#######Just to see which EXtra State, i.e. dont taking to accoount just the states of Sydney;poser
+#######Just to see which EXtra State, i.e. dont taking to accoount just the states of Sydney;poster
 
 drybeans_no_tested_dos <- wm1_%>% select(Collection_ID, State, County,Field,Country, Origin, Year, Fungicide_status, Host, Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter(Fungicide_status == "no_tested", Host!= "soybeans")
 #Here sometimes becaus the way that Iam reading read.csv I have to make a droplevels every each object and maybe having problems to not make NA a factor as following 
@@ -666,7 +671,7 @@ drybeans_testedd$Field <- as.character(drybeans_testedd$Field)
 drybeans_testedd$Field <- as.factor(drybeans_testedd$Field)
 droplevels(drybeans_testedd$Field)
 
- ello <-
+ hello <-
   drybeans_testedd %>% 
   filter(Field=="WM_production_1"|
                               Field=="WM_production_2"|
@@ -734,7 +739,9 @@ drybeans_testedd %>%
                                 Field=="WM_production_29"|
   
 Field=="WM_production_30"  
-  ) %>% group_by(State, Year, Field) %>% summarize(N_isolates = n()) %>% arrange(desc(N_isolates)) %>% ungroup() %>% add_row(State = "Total", N_isolates = sum(.$N_isolates)) %>% kable(format = "markdown")  %>%  write2pdf("new_table2.pdf")# quiet = TRUE)
+  ) %>% group_by(State, Year, Field) %>% summarize(N_isolates = n()) %>% arrange(desc(N_isolates)) %>% ungroup() %>% add_row(State = "Total", N_isolates = sum(.$N_isolates)) 
+# %>% kable(format = "markdown") 
+#%>%  write2pdf("new_table2.pdf")# quiet = TRUE)
   
 # HOW Sydney asked with two columns
 
@@ -806,7 +813,8 @@ cercospora <-
     State = "Total",
     N_isolates_tested = sum(.$N_isolates_tested),
     N_isolates_notested = sum(.$N_isolates_notested)
-  ) %>%  kable(format = "markdown")  %>%  #write2pdf("new_table3.pdf")
+  ) 
+# %>%  kable(format = "markdown")  %>%  #write2pdf("new_table3.pdf")
 
 ```
 #  List for Cristian
@@ -833,8 +841,9 @@ cercospora <-
                                 Field=="WM_production_25"|
                                 Field=="WM_production_26"|
                                 Field=="WM_production_27"|
-                                Field=="WM_production_28") %>%  group_by( Collection_ID, Field) %>%  summarize() %>% 
-write_csv("tableforCristiann.csv")
+                                Field=="WM_production_28") %>%  group_by( Collection_ID, Field) %>%  summarize() 
+#%>% 
+#write_csv("tableforCristiann.csv")
 ```
 
 ```{r}
@@ -896,9 +905,10 @@ b <-
                Field,
                Group_MOA_current_season,
                Group_MOA_previous_seasons) %>%  
-               arrange( desc(Group_MOA_current_season),Group_MOA_previous_seasons,State,County, Field, Year, Collection_ID ) %>% 
-               kable(format = "markdown") %>%  
-               write2pdf("new_table3.pdf")
+               arrange( desc(Group_MOA_current_season),Group_MOA_previous_seasons,State,County, Field, Year, Collection_ID ) 
+
+  # %>%               kable(format = "markdown") #%>%  
+   #          write2pdf("new_table3.pdf")
 
 #Summarizing
 b_ <-   wm1_ %>% select(
@@ -959,9 +969,10 @@ Field,
 Group_MOA_current_season,
 Group_MOA_previous_seasons) %>% group_by(Year,State, County, Field, Group_MOA_current_season) %>% 
   summarize(N_isolates=n())%>% 
-  arrange(desc(N_isolates)) %>%
-kable(format = "markdown") %>%
-write2pdf("new_table4.pdf")
+  arrange(desc(N_isolates))
+#%>%
+#kable(format = "markdown") #%>%
+#write2pdf("new_table4.pdf")
 
 # hypothesis one ----------------------------------------------------------
 
@@ -978,16 +989,17 @@ wm1_1 <- wm1_ %>%  select(
   #Creating the table and now taking out also previous season Unknown because It does not help me
 c <- wm1_1[unlist( b),]
 c_c <-  c %>% filter( Group_MOA_previous_seasons != "unknown") %>% 
-arrange( desc(Group_MOA_previous_seasons),State,County, Field, Year, Collection_ID ) %>% 
-  kable(format = "markdown") %>%  
-  write2pdf("new_table5.pdf")
+arrange( desc(Group_MOA_previous_seasons),State,County, Field, Year, Collection_ID ) #%>% 
+#  kable(format = "markdown") # #write2pdf("new_table5.pdf")
+
 ##Summarizing
 c_c_c <-  c %>% filter( Group_MOA_previous_seasons != "unknown") %>% 
   group_by(Year,State, County, Field, Group_MOA_current_season, Group_MOA_previous_seasons) %>% 
   summarize(N_isolates=n())%>% 
-  arrange(desc(N_isolates)) %>%
-  kable(format = "markdown") %>%  
-  write2pdf("new_table6.pdf")
+  arrange(desc(N_isolates))
+#%>%
+  #kable(format = "markdown")# %>%  
+  #write2pdf("new_table6.pdf")
 
 ```
 # Using function
@@ -999,9 +1011,9 @@ get_range <- function(mynumber) {
   return(data.frame(high_ID = cc, low_ID = dd))
 }
 ```
-# Another questionfrom Sydney about Neraska aisoalte sgroup 3
+# Another question from Sydney about Neraska isolates group 3
 ```{r}
-wm1_ %>% select(
+rr <- wm1_ %>% select(
     Collection_ID,
     Origin,
     Year,
@@ -1059,6 +1071,6 @@ wm1_ %>% select(
              Group_MOA_current_season,
              Group_MOA_previous_seasons) %>% filter(Group_MOA_current_season== "Group_3")%>% group_by(Year,State, County, Field) %>% 
     summarize(N_isolates=n())%>% 
-    arrange(desc(N_isolates)) %>% kable() %>% #write2pdf("Nebraska_isolates_Group3_MOA.pdf")
+    arrange(desc(N_isolates)) #%>% kable() #%>% write2pdf("Nebraska_isolates_Group3_MOA.pdf")
 ```
 
