@@ -30,7 +30,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ###Reading data 
 ```{r}
 ###
-WM <- read.csv("data/WM-fixingproductnamesID2573_modifyingforactiveingredient_6.csv", stringsAsFactors = TRUE)# Making the columns as 
+WM <- read.csv("data/WM-fixingproductnamesID2573_modifyingforactiveingredient_7.csv", stringsAsFactors = TRUE)# Making the columns as 
 
 WM$Collection_ID <- str_squish(WM$Collection_ID)# reading with the symbols that this column has
 #factors
@@ -547,7 +547,7 @@ drybeans_tested2
 ```{r}
 drybeans_no_tested <- wm1_%>% select(Collection_ID, State, County,Field,Country, Origin, Year, Fungicide_status, Host, Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter(Fungicide_status == "no_tested", Host!= "soybeans", Origin=="farmer fields", 
 # States according to the Sydney's poster                                                 
-State== "MI"| State== "ND"| State== "WA"| State== "NE"| State== "CO"| State== "OR"| State== "CA"| State== "MN"| State== "WI"| State== "ID"| State== "NY") 
+State== "MI"| State== "ND"| State== "WA"| State== "NE"| State== "CO"| State== "OR"| State== "CA"| State== "MN"| State== "WI"| State== "ID"| State== "NY"| Country== "mexico"| Country == "brazil") 
 
 #Here sometimes because the way that Iam reading read.csv I have to make a droplevels every each object and maybe having problems to not make NA a factor as following 
 drybeans_no_tested$Field <- as.character(drybeans_no_tested$Field)
@@ -841,7 +841,9 @@ cercospora <-
                                 Field=="WM_production_25"|
                                 Field=="WM_production_26"|
                                 Field=="WM_production_27"|
-                                Field=="WM_production_28") %>%  group_by( Collection_ID, Field) %>%  summarize() 
+                                Field=="WM_production_28") %>%
+  select(Host,Country, State, Year, Collection_ID, Field ) %>% 
+  group_by( Collection_ID, Field) %>%  summarize() 
 #%>% 
 #write_csv("tableforCristiann.csv")
 ```
