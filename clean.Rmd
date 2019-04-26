@@ -1,0 +1,54 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+#Image: ![](Documents/to/white_mold.png)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(maps)
+library(mapdata)
+library(geosphere)
+library(sf)
+library(lwgeom)
+library(knitr)
+library(kableExtra)
+library(tinytex)
+library(arsenal)
+library(magrittr)
+knitr::opts_chunk$set(echo = TRUE)
+# graph names of the body means "number isolates/field" 
+# graph names of powdery mildews means "Year"
+
+```
+
+```{r}
+hi <- 
+read.csv("data/clean_data.csv", stringsAsFactors = TRUE)
+```
+
+```{r}
+drybeans_tested <- hi%>% select(ID, State, County, Country,Field, Source, Year, Fungicide_status, Host, Group_MOA_current_season, molecule.s._previous_seasons) %>%# previous season is missing
+  
+  filter(Fungicide_status == "tested", Host== "drybeans") %>% 
+  group_by(State, Source) %>% 
+  summarize( N= n())
+
+  
+  levels(drybeans_tested$Group_MOA_current_season)
+  levels(drybeans_tested$Group_MOA_previous_seasons)
+  
+  #######
+  
+  soybeans_tested <- wm1_%>% select(Collection_ID, State, County, Country, Origin, Year, Fungicide_status, Host, Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter(Fungicide_status == "tested", Host== "soybeans") #%>% group_by(Host, State, Origin,Year, Group_MOA_current_season,  Group_MOA_previous_seasons) 
+  
+  levels(soybeans_tested$Group_MOA_current_season)
+  levels(soybeans_tested$Group_MOA_previous_seasons)
+  
+  Origin=="farmer fields", 
+# States according to the Sydney's poster  + Mexico, chec this becasu ein in captial Letter and lower case                                                
+State== "MI"| State== "ND"| State== "WA"| State== "NE"| State== "CO"| State== "OR"| State== "CA"| State== "MN"| State== "WI"| State== "ID"| State== "NY"| Country== "Mexico") 
+```
+
