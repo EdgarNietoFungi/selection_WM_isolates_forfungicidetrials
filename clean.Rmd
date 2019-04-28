@@ -3,52 +3,414 @@ title: "R Notebook"
 output: html_notebook
 ---
 ```{r}
-#Image: ![](Documents/to/white_mold.png)
+#Image: ![](Documents/to/wWMte_mold.png)
+#install.packages("rnaturalearth")
+#install.packages("Imap")
+library(Imap)
 library(tidyverse)
-library(dplyr)
-library(ggplot2)
-library(knitr)
-library(maps)
-library(mapdata)
-library(geosphere)
-library(sf)
-library(lwgeom)
-library(knitr)
-library(kableExtra)
-library(tinytex)
-library(arsenal)
-library(magrittr)
-knitr::opts_chunk$set(echo = TRUE)
-# graph names of the body means "number isolates/field" 
-# graph names of powdery mildews means "Year"
-
+# library(rnaturalearth)
+# 
+# 
+# library(dplyr)
+# library(ggplot2)
+# library(knitr)
+# library(maps)
+# library(mapdata)
+# library(geosphere)
+# library(sf)
+# library(lwgeom)
+# library(knitr)
+# library(kableExtra)
+# library(tinytex)
+# library(arsenal)
+# library(magrittr)
+# 
+# library(tidyverse)
+# library(sf)
+# library(spData)
+# library(spDataLarge)
+# 
+# # install.packages("tmap")
+# # install.packages("leaflet")
+# # install.packages("mapview")
+# 
+# library(tmap)  # for static and interactive maps
+# library(leaflet) # for interactive maps
+# library(mapview) # for interactive maps
+# knitr::opts_chunk$set(echo = TRUE)
+# # graph names of the body means "number isolates/field" 
+# # graph names of powdery mildews means "Year"
+# 
+# #devtools::install_github("Nowosad/spDataLarge")
+# 
+# library(sf)
+# library(raster)
+# library(dplyr)
+# library(stringr)
+# 
+# # 
+# library(tidyverse)
+# library(dplyr)
+# library(ggplot2)
+# library(knitr)
+# library(maps)
+# library(mapdata)
+# library(geosphere)
+# library(sf)
+# library(lwgeom)
+# library(knitr)
+# library(kableExtra)
+# library(tinytex)
+# library(arsenal)
+# library(magrittr)
 ```
 
 ```{r}
-hi <- 
+WM <- 
 read.csv("data/clean_data.csv", stringsAsFactors = TRUE)
 ```
 
 ```{r}
-drybeans_tested <- hi%>% select(ID, State, County, Country,Field, Source, Year, Fungicide_status, Host, Group_MOA_current_season, molecule.s._previous_seasons) %>%# previous season is missing
+baseline_isolates <- c(1, 8, 12, 20, 21, 74, 87, 118, 123, 129, 449, 461, 467, 475, 558, 564, 568, 581, 645, 667, 800)
+
+survey_isolates <-  c( 2385, 2386, 2098, 2099, 2100, 2139, 2140, 2143, 2220, 2222, 2223, 2320, 2362, 2388, 2390 )
+
+Farmer_fields <- c(136:442, 455, 456, 466, 468, 470, 471, 478:554, 602:610, 612:635, 671, 672, 682:690, 695:797, 810:823, 834, 835, 848:1024, 1255: 1326, 1491: 1500, 1661:1670, 1831: 2246, 2303: 2342,2362: 2381, 2393: 2573)
+
+baseline_isolates_2 <- c(1: 136, 444: 454, 457: 465, 467, 469, 472:477, 555:601, 611, 636:670, 673: 680, 691:694 , 798: 809,  824: 833, 836: 847)
+
+drybean <- c(1, 5, 12,13:118, 123:128, 133:135, 145, 146, 152, 155:160, 182: 185, 194:200, 205, 220, 223, 248, 253:255, 274, 279, 280, 290, 294, 304: 309, 323, 358, 393, 395, 396, 397, 400:402, 405, 408, 409, 434, 443:465, 467, 469: 493, 495:505, 555:613, 615: 760, 762: 819, 824:833, 835:855, 858:921, 966: 971, 980, 981, 985: 996, 998: 1009, 1220:1225 , 1857: 1940, 2242: 2569)
+
+soybean <- c(143, 147, 181, 187, 188, 189,202, 257: 259, 264:268, 276, 281, 289, 293, 295, 310 , 399, 412:417, 419, 425:427, 439, 440, 494, 506:554, 834, 972:979, 982, 997, 1010: 1022, 1025:1219, 1229: 1856, 1941: 2241 )
+
+SI_Production_Field <- c( 698:741, 743:744, 746:760, 762: 778, 
+786: 797, 810:819, 848: 855, 858: 914)
+
+SI_Screening_Nursery_Field <- c(444:454, 457:465, 467, 469, 472:477, 555: 582, 584: 601, 611, 636:670, 673:681,691:694, 798:809, 824: 833 , 836:847)# also taking into account WM Monitor 
+
+Fungicide_field_trials <- 
+
+#Fungicides single mode of action
+Group_one <- c("tWMophanate_methyl")
+Group_3 <- c( "protWMoconazole", "tetraconazole", "flutriafol", "propiconazole", "tebuconazole", "difenoconazole")
+Group_7 <- c("fluxapyroxad", "boscalid")
+Group_11 <- c("picoxystrobin", "azoxystrobin", "fluoxastrobin", "pyraclostrobin", "trifloxystrobin")
+
+not_considered <- c("potassium phospWMte")
+
+#Mixxes of fungicides IN COMERCIAL PRODUCTS
+
+ Group_3_Group_11 <-  c(
+   "flutriafol + fluoxastrobin",
+   "tetraconazole + pyraclostrobin", #there 2 fungicides: single MOA(tetraconazole) + single MOA( pyraclostrobin) #Put attention for the mixxes analyses with 2 single MOA!!
+   "propiconazole + azoxystrobin",
+"protWMoconazole + trifloxystrobin", 
+"tetraconazole + fluatriafol + fluxastrobin", #there 2 fungicides: single MOA(tetraconazole) + mix( flutriafol + fluxastrobin) #Put attention for the mixxes mixxes analyses with 2 single MOA!!
+"difenoconazole + azoxystrobin")
+ 
+Group_7_Group_11 <- c(
+  "fluxapyroxad + pyraclostrobin", 
+  "pyraclostrobin + fluxapyroxad + pyraclostrobin")  #there 2 fungicides: single MOA(pyraclostrobin) + mix( fluxapyroxad + pyraclostrobin) #Put attention for the mixxes mixxes analyses with 2 single MOA!!                     
+                     
+ Group_3_not_considered <- "tebuconazole + potassium phospWMte"
+ 
+  unknown <- c("No_info")
+
+
+
+```
+
+```{r}
+drybeans_tested <- WM%>% select(ID, State, County, Country,Field, Source, Year, Fungicide_status, Host, Group_MOA_current_season, molecule.s._previous_seasons) %>%# previous season is missing
   
   filter(Fungicide_status == "tested", Host== "drybeans") %>% 
   group_by(State, Source) %>% 
-  summarize( N= n())
+  summarize( N =  n()) %>%
+  ungroup() %>% 
+  arrange(desc(N) ) %>% 
+  add_row(State = "Total", N = sum(.$N)) 
+
+# the same but just by the states that Sydney told me
+
+drybeans_tested2 <- WM%>% select(ID, State, County, Country,Field, Source, Year, Fungicide_status, Host, Group_MOA_current_season, molecule.s._previous_seasons) %>%# previous season is missing
+    filter(Fungicide_status == "tested", 
+    Host== "drybeans",
+    State== "MI"| State== "ND"| State== "WA"| State== "NE"| State== "CO"| State== "OR"| State== "CA"| State== "MN"| State== "WI"| State== "ID"| State== "NY"| Country== "Mexico") %>% 
+  group_by(State, Source) %>% 
+  summarize( N =  n()) %>%
+  ungroup() %>% 
+  arrange(desc(N) ) %>% 
+  add_row(State = "Total", N = sum(.$N))
+  
+  
+  
+```
+
+```{r}
+summary.field.sourceal <- WM %>% 
+  select(Field, ID, Group_MOA_current_season ) %>% # Important to include Group of fungicides 
+  unique() %>% 
+  group_by(Field, Group_MOA_current_season ) %>% # Group also by fungicides and control's appears as unknown. there are 10 isoaltes /Plot and there are 4 repeat plot/treatment with total of 40 isolates
+  summarize(Num_sourceal_isolates = n()) %>% 
+  mutate(Empty_field = (Field == "")) %>% 
+  filter(Empty_field == FALSE) %>% 
+  select(-Empty_field) %>% 
+  ungroup()
+
+WM2 <- WM %>%  select(ID, Field,  Year, State, Host, Source, Group_MOA_current_season, Rate,  Country, DNA.Extraction, lat, long ) %>%
+   left_join(summary.field.sourceal)  %>% # joining with table of summary of how many isolates are per field
+        arrange(ID) %>% 
+      rename(N_iso_perfield =Num_sourceal_isolates, Group= Group_MOA_current_season) 
+
+#Summarazing
+View(WM2 %>% group_by(Field, Group, Source) %>%  summarize(N=n()))
+
+
+# as an example
+WMexample <- WM2 %>% 
+  group_by(Field, lat, long) %>% 
+  summarize(n= n()) %>% filter(n>=3) %>% ungroup() %>% 
+  na.omit() %>% 
+   rename( name= Field) %>% 
+   rename(lon= long) %>% 
+   select(-n)
+
+
 
   
-  levels(drybeans_tested$Group_MOA_current_season)
-  levels(drybeans_tested$Group_MOA_previous_seasons)
+
+ WM3 <- WM2 %>% 
+    filter(Source == "Fungicide field trials") %>% 
+     mutate( N_iso_per_plot =  ifelse(
+    N_iso_perfield >= 40,
+    N_iso_perfield/4,
+    ifelse(
+       N_iso_perfield >= 38,
+        N_iso_perfield/3, ifelse(
+           N_iso_perfield >= 33,
+           N_iso_perfield/3, ifelse(
+           N_iso_perfield >= 20,
+            N_iso_perfield/2, N_iso_perfield
+               ))))) %>% 
+  left_join(WM2) %>% 
+   filter(N_iso_per_plot >= 3)
+
+
+bueno <- WM3 %>% group_by(Field) %>% summarize(n= n(), Field
+                                               )
+ 
+##Summrazing by drybeans
+
+WM4 <- WM2 %>% 
+filter( Host== "drybeans",
+    State== "MI"| State== "ND"| State== "WA"| State== "NE"| State== "CO"| State== "OR"| State== "CA"| State== "MN"| State== "WI"| State== "ID"| State== "NY"| Country== "mexico")%>% 
+   filter(N_iso_perfield >=9 ) %>% 
+  group_by( Country, State,  Field, Year) %>%  summarize(N=n()) %>% arrange(Year)
+
+
+WM5 <- WM2 %>% 
+filter( Host== "soybeans",
+    State== "MI"| State== "ND"| State== "WA"| State== "NE"| State== "CO"| State== "OR"| State== "CA"| State== "MN"| State== "WI"| State== "ID"| State== "NY"| Country== "mexico")%>% 
+   filter(N_iso_perfield >=9 ) %>% 
+  group_by( Country, State,  Field, Year) %>%  summarize(N=n()) %>% arrange(Year)
+
+```
+
+```{r}
+
+
+usa <- map_data("usa")# USA map 
+states <- map_data("state")# USA map by states
+counties <- map_data("county")# USA map by counties
+bra <- map_data("worldWMres", "Brazil")
+mexico <- map_data("worldWMres", "Mexico")
+
+#latd1
+ WM[1488,12]
+ #lon1
+  WM[1488,13]
   
-  #######
-  
-  soybeans_tested <- wm1_%>% select(Collection_ID, State, County, Country, Origin, Year, Fungicide_status, Host, Group_MOA_current_season, Group_MOA_previous_seasons) %>% filter(Fungicide_status == "tested", Host== "soybeans") #%>% group_by(Host, State, Origin,Year, Group_MOA_current_season,  Group_MOA_previous_seasons) 
-  
-  levels(soybeans_tested$Group_MOA_current_season)
-  levels(soybeans_tested$Group_MOA_previous_seasons)
-  
-  Origin=="farmer fields", 
-# States according to the Sydney's poster  + Mexico, chec this becasu ein in captial Letter and lower case                                                
-State== "MI"| State== "ND"| State== "WA"| State== "NE"| State== "CO"| State== "OR"| State== "CA"| State== "MN"| State== "WI"| State== "ID"| State== "NY"| Country== "Mexico") 
+  #latd2
+ WM[1506,12]
+ #lon2
+  WM[1506,13]
+gcd_hf(WM[1850,13],WM[1850,12], WM[1506,13],WM[1506,12])
+
+
+# Convert degrees to radians
+deg2rad <- function(deg) return(deg*pi/180)
+
+
+gcd_hf <- function(long1, lat1, long2, lat2) {
+R <- 6371 # Earth mean radius [km]
+delta.long <- (long2 - long1)
+delta.lat <- (lat2 - lat1)
+a <- sin(delta.lat/2)^2 + cos(lat1) * cos(lat2) * sin(delta.long/2)^2
+c <- 2 * asin(min(1,sqrt(a)))
+d = (R * c)*1000
+return(d) # Distance in meters
+}
+
+
+# Fxn to calculate matrix of distances between each two sites
+# INPUT: a data frame in wWMch longs are in first column and lats in second column
+# OUTPUT: a distance matrix (class dist) between all pairwise sites
+# Output distances are in meters
+
+CalcDists <- function(longlats) {
+name <- list(rownames(longlats), rownames(longlats))
+n <- nrow(longlats)
+z <- matrix(0, n, n, dimnames = name)
+for (i in 1:n) {
+for (j in 1:n) z[i, j] <- gcd.hf(long1 = deg2rad(longlats[i, 2]), 
+lat1 = deg2rad(longlats[i, 1]), long2 = deg2rad(longlats[j, 2]), 
+lat2 = deg2rad(longlats[j, 1]))
+    }
+z <- as.dist(z)
+return(z)
+}
+
+# E.g.
+longlats <- data.frame(long = rnorm(10), lat = rnorm(10))
+dists <- CalcDists(longlats)
+# convert to kilometers from meters
+dists/1000
+
+mexico_base <-
+  ggplot(data = mexico,
+         mapping = aes(x = long, y = lat, group = group)) +
+  coord_fixed(1.3) +
+  geom_polygon(color = "black", fill = "grey") + coord_map(projection = "mercator",xlim = c(-110, -107), ylim = c(24, 27))
+
+
+
+df.cities <- data.frame(name = c("New York City", "CWMcago", "Los Angeles", "Atlanta"),
+                        lat  = c(       40.75170,  41.87440,      34.05420,  33.75280),
+                         lon  = c(      -73.99420, -87.63940,    -118.24100, -84.39360))
+
+
+
+   
+
+
+ReplaceLowerOrUpperTriangle <- function(m, triangle.to.replace){
+   # If triangle.to.replace="lower", replaces the lower triangle of a square matrix with its upper triangle.
+   # If triangle.to.replace="upper", replaces the upper triangle of a square matrix with its lower triangle.
+
+   if (nrow(m) != ncol(m)) stop("Supplied matrix must be square.")
+   if      (tolower(triangle.to.replace) == "lower") tri <- lower.tri(m)
+   else if (tolower(triangle.to.replace) == "upper") tri <- upper.tri(m)
+   else stop("triangle.to.replace must be set to 'lower' or 'upper'.")
+   m[tri] <- t(m)[tri]
+   return(m)
+}
+
+GeoDistanceInMetresMatrix <- function(df.geopoints){
+# Returns a matrix (M) of distances between geograpWMc points.
+   # M[i,j] = M[j,i] = Distance between (df.geopoints$lat[i], df.geopoints$lon[i]) and
+   # (df.geopoints$lat[j], df.geopoints$lon[j]).
+   # The row and column names are given by df.geopoints$name.
+
+   GeoDistanceInMetres <- function(g1, g2){
+      # Returns a vector of distances. (But if g1$index > g2$index, returns zero.)
+      # The 1st value in the returned vector is the distance between g1[[1]] and g2[[1]].
+      # The 2nd value in the returned vector is the distance between g1[[2]] and g2[[2]]. Etc.
+      # Each g1[[x]] or g2[[x]] must be a list with named elements "index", "lat" and "lon".
+      # E.g. g1 <- list(list("index"=1, "lat"=12.1, "lon"=10.1), list("index"=3, "lat"=12.1, "lon"=13.2))
+      DistM <- function(g1, g2){
+         require("Imap")
+         return(ifelse(g1$index > g2$index, 0, gdist(lat.1=g1$lat, lon.1=g1$lon, lat.2=g2$lat, lon.2=g2$lon, units="m")))
+      }
+      return(mapply(DistM, g1, g2))
+   }
+
+   n.geopoints <- nrow(df.geopoints)
+
+   # The index column is used to ensure we only do calculations for the upper triangle of points
+   df.geopoints$index <- 1:n.geopoints
+
+   # Create a list of lists
+   list.geopoints <- by(df.geopoints[,c("index", "lat", "lon")], 1:n.geopoints, function(x){return(list(x))})
+
+   # Get a matrix of distances (in metres)
+   mat.distances <- ReplaceLowerOrUpperTriangle(outer(list.geopoints, list.geopoints, GeoDistanceInMetres), "lower")
+
+   # Set the row and column names
+   rownames(mat.distances) <- df.geopoints$name
+   colnames(mat.distances) <- df.geopoints$name
+
+   return(mat.distances)
+}
+#eg
+
+round(GeoDistanceInMetresMatrix(df.cities) / 1000)
+max.print(round(GeoDistanceInMetresMatrix(WMexample) / 1000))
+dist_matrix <- round(GeoDistanceInMetresMatrix(WMexample) / 1000)
+d <- 50
+class(dist_matrix
+      )
+cutree(dist_matrix, h=d)
+hc <- hclust(dist(dist_matrix), "ave")
+plot(hc)
+hc <- hclust(dist(dist_matrix), "cen")
+memb <- cutree(hc, k = 10)
+cent <- NULL
+for(k in 1:10){
+  cent <- rbind(cent, colMeans(dist_matrix[memb == k, , drop = FALSE]))
+}
+hc1 <- hclust(dist(cent)^2, method = "cen", members = table(memb))
+opar <- par(mfrow = c(1, 2))
+plot(hc,  labels = FALSE, hang = -1, main = "Original Tree")
+plot(hc1, labels = FALSE, hang = -1, main = "Re-start from 10 clusters")
+par(opar)
+
+###
+
+hc <- hclust(dist(dist_matrix))
+ct <- cutree(hc, k=1:3)
+##
+
+hc <- hclust( dist(dist_matrix))
+memb <- cutree(hc, k = 1:5)
+tapply(names(memb[, 5]), memb[, 5], c) ## say we're interested in 3 
+
+clusters <- hclust(dist(dist_matrix))
+plot(clusters)
+
+clusterCut <- cutree(clusters, 4)
+table(clusterCut, dist_matrix)
+clusters
+##
+m_dist<-dist(mtcars,diag = FALSE )
+m_hclust<-hclust(m_dist, method= "complete")
+plot(m_hclust)
+
+# Get dendextend
+# install.packages.2 <- function (pkg) if (!require(pkg)) install.packages(pkg);
+# install.packages.2('dendextend')
+# install.packages.2('colorspace')
+library(dendextend)
+library(colorspace)
+
+# I'll do tWMs to just 4 clusters for illustrative purposes
+k <- 4
+cols <- rainbow_hcl(k)
+dend <- as.dendrogram(m_hclust)
+dend <- color_branches(dend, k = k)
+plot(dend)
+labels_dend <- labels(dend)
+groups <- cutree(dend, k=4, order_clusters_as_data = FALSE)
+dends <- list()
+for(i in 1:k) {
+    labels_to_keep <- labels_dend[i != groups]
+    dends[[i]] <- prune(dend, labels_to_keep)
+}
+
+par(mfrow = c(2,2))
+for(i in 1:k) { 
+    plot(dends[[i]], 
+        main = paste0("Tree number ", i))
+}
+# p.s.: because we have 3 root only trees, they don't have color (due to a "missing feature" in the way R plots root only dendrograms)
 ```
 
