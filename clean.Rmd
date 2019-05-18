@@ -8,6 +8,22 @@ output: html_notebook
 #install.packages("Imap")
 #library(Imap)
 library(tidyverse)
+library(ggplot2)
+library(ezec)
+#library(NRES803)
+library(broom)
+library(ggridges)
+library(cowplot)
+library(gridExtra)
+library(kableExtra)
+library(arsenal)
+library(DescTools)
+library(knitr)
+library(kableExtra)
+# library(arsenal)
+# library(DescTools)
+library(knitr)
+library(tidyverse)
 # library(rnaturalearth)
 # 
 # 
@@ -190,7 +206,7 @@ summary.field.sourceal <- WM %>%
   select(-Empty_field) %>% 
   ungroup()
 
-WM2 <- WM %>%  select(ID, Field,  Year, State,County, Host, Source, Group_MOA_current_season, Rate,  Country, DNA.Extraction, lat, long, Selection_fungicides, DNA.Extraction ) %>%
+WM2 <- WM %>%  select(ID, Field,  Year, State,County, Host, Source, Plot,  Group_MOA_current_season, Rate,  Country, DNA.Extraction, lat, long, Selection_fungicides, DNA.Extraction ) %>%
 left_join(summary.field.sourceal)  %>% # joining with table of summary of how many isolates are per field
 arrange(ID) %>% 
 rename(N_iso_perfield =Num_sourceal_isolates, Group= Group_MOA_current_season) 
@@ -200,28 +216,107 @@ View(WM2 %>% group_by(Field, Group, Source, DNA.Extraction) %>%  summarize(N=n()
 
 
 # as an example
-WMexample <- WM2 %>% 
-group_by(Field, lat, long) %>% #filterring those which have same field name, lat and long, in other word 
-unique() %>% 
-  summarize(n= n()) %>% 
- filter(n>=3) %>% #selecting those that have more or equal than 3 isola/field
-ungroup() %>% 
-na.omit() %>% 
-rename( name= Field) %>% 
-rename(lon= long) %>% 
- select(-n)
 
-WMexample2 <- WM2 %>% 
-  filter(Selection_fungicides == "selected") %>% 
-group_by(Field, lat, long) %>% #filterring those which have same field name, lat and long, in other word 
+WMexample <- WM2 %>% 
+  filter(Year >= 2015) %>% 
+  mutate(Year= as.factor(Year)) %>% 
+        group_by(Year, State, County, Field, Plot) %>% #filterring those which have same field name, lat and long, in other word 
 unique() %>% 
-  summarize(n= n()) %>% 
- filter(n>=3) %>% #selecting those that have more or equal than 3 isola/field
+  summarize(N_iso_per_plot= n()) %>% 
+# filter(n>=3) %>% #selecting those that have more or equal than 3 isola/field
 ungroup() %>% 
 na.omit() %>% 
-rename( name= Field) %>% 
-rename(lon= long) %>% 
- select(-n)
+#rename( name= Field) %>% 
+#rename(lon= long) %>% 
+ #select(-n) %>% 
+  mutate(Year= as.factor(Year)) %>% 
+  mutate(Numberofisolates= 
+           ifelse(N_iso_per_plot <= 3, "<= 3",
+          ifelse(N_iso_per_plot <= 9, "<= 9", "> 9"
+                       ))) %>% 
+  mutate(Numberofisolates= as.factor(Numberofisolates)) #%>% 
+  #filter(State== "NE")
+  
+
+WMexample %>% kable(format = "markdown",caption = "Table with outliers for each fungicide, NA= never tested, 0= not an outlier but tested, 1= outlier", padding = 0, align = "l") %>%
+   write2pdf("WMexample.pdf")
+
+
+#####
+WMexample.2 <- WM2 %>% 
+  filter(Year >= 2015) %>% 
+  mutate(Year= as.factor(Year)) %>% 
+        group_by(Year, State, County, Field) %>% 
+  summarize(N_iso_per_field= n())
+
+
+WMexample.2 %>% kable(format = "markdown",caption = "Table with outliers for each fungicide, NA= never tested, 0= not an outlier but tested, 1= outlier", padding = 0, align = "l") %>%
+   write2pdf("WMexample.2.pdf")
+
+#### Plots per field
+WM_plots_per_field <- WM2 %>% 
+  ungroup() %>% 
+  filter(Year >= 2015) %>% 
+  mutate(Year= as.factor(Year)) %>% 
+  select(Year, State, County, Field, Plot) %>% 
+  group_by(Year, State, County, Field) %>% 
+  unique() %>%
+  summarize(N_plots_per_field= n())
+
+chk <- WM2 %>% 
+  select(Year, State, County, Field, Plot) %>% 
+  filter(Year == 2015, Field == "mont") %>% 
+  unique()
+
+#### 
+
+WMexample.3 <- WM2 %>% 
+  filter(Year >= 2015) %>% 
+  mutate(Year= as.factor(Year)) %>% 
+        group_by(Year, State, County) %>% 
+  summarize(N_iso_per_field= n()) %>%
+  ungroup() %>% 
+  group_by(Year, State) %>% 
+  summarize(N_field_per_county= n())
+  
+#### by state
+WMexample.4 <- WM2 %>% 
+  filter(Year >= 2015) %>% 
+  mutate(Year= as.factor(Year)) %>% 
+        group_by(Year, State, County, Field) %>% 
+  summarize(N_iso_per_field= n()) %>%
+  ungroup() %>% 
+  group_by(Year, State) %>% 
+  summarize(N_county_per_state= n())
+
+
+WMexample.2 <- WM2 %>% 
+  filter(Country=="USA", 
+  Year >= 2015) %>% 
+  mutate(Year= as.factor(Year)) %>% 
+  group_by(Year, State, Field, lat, long) %>% #filterring those which have same field name, lat and long, in other word 
+unique() %>% 
+  summarize(N_iso_per_plot= n()) %>% 
+# filter(n>=3) %>% #selecting those that have more or equal than 3 isola/field
+ungroup() %>% 
+na.omit() %>% 
+#rename( name= Field) %>% 
+#rename(lon= long) %>% 
+ #select(-n) %>% 
+  mutate(Year= as.factor(Year)) %>% 
+  inner_join(WM6)
+
+# WMexample2 <- WM2 %>% 
+#   filter(Selection_fungicides == "selected") %>% 
+# group_by(Field, lat, long) %>% #filterring those which have same field name, lat and long, in other word 
+# unique() %>% 
+#   summarize(n= n()) %>% 
+#  filter(n>=3) %>% #selecting those that have more or equal than 3 isola/field
+# ungroup() %>% 
+# na.omit() %>% 
+# rename( name= Field) %>% 
+# #rename(lon= long) %>% 
+#  select(-n)
 
 WM3 <- WM2 %>% 
   ungroup() %>% 
@@ -300,19 +395,51 @@ summarize(N=n()) %>%
 arrange(Year)
 
 ```
-
+How many counties do we have from each state?
 ```{r}
 
-WM6 <- WM3 %>% 
+WM6 <- WM2 %>% 
+  ungroup() %>% 
+    filter( Year >= 2015) %>% 
+  mutate(Year= as.factor(Year)) %>% 
+  group_by(Year, State, Field, Source) %>% 
+  summarize(Number_iso_per_plot=n()) %>% 
+  ungroup() %>% 
+  group_by(Year, State) %>% 
+  summarize(Number_counties=n()) %>% 
+  ungroup() %>% 
+   mutate(Number_iso_per_plot= 
+           ifelse(Number_iso_per_plot <= 3, "<= 3",
+          ifelse(Number_iso_per_plot <= 9, "<= 9", "> 9"
+                       ))) %>% 
+  mutate(Number_iso_per_plot = as.factor(Number_iso_per_plot))
+
+WM6 %>% kable(format = "markdown",caption = "Table with outliers for each fungicide, NA= never tested, 0= not an outlier but tested, 1= outlier", padding = 0, align = "l") %>%
+   write2pdf("List_of_isolates_to_test_BOSCALID.pdf")
+
+WM6_ <- WM2 %>% 
+  ungroup() %>% 
+    filter( Year >= 2015) %>% 
+  mutate(Year= as.factor(Year)) %>% 
+  group_by(Year, State ) %>% 
+  summarise(Number_counties = n()) %>% 
+  left_join(WM2, by = c("State","Year"))
+
+WM7 <- WM3 %>% 
   ungroup() %>% 
   mutate(Numberofisolates= 
            ifelse(N_iso_per_plot <= 3, "<= 3",
           ifelse(N_iso_per_plot <= 9, "<= 9", "> 9"
                        ))) %>%
   filter(Country== "USA") %>% 
-  mutate(Year= as.factor(Year))
+  mutate(Year= as.factor(Year)) %>% 
+  group_by(Year, State, County) %>% 
+  summarize(N=n()) %>% 
+  ungroup() %>% 
+  mutate(Year= as.integer(Year)) %>% 
+  left_join(WM3)
 
-WM7 <- WM3 %>% 
+WM8 <- WM3 %>% 
   ungroup() %>% 
   mutate(Numberofisolates= 
            ifelse(N_iso_per_plot <= 3, "<= 3",
@@ -548,7 +675,7 @@ NE_counties_base <-  ggplot(data = NE_counties,
                             mapping = aes(x = long, y = lat, group = subregion)) +# here the group means the counties
   coord_fixed(1.3) +
   geom_polygon(color = "black", fill = "grey") +  geom_text(
-    data = centroid,
+    data = centroid_nebraska,
     aes(label = subregion, x = long, y = lat),
     check_overlap = TRUE,
     size = 3
@@ -558,11 +685,12 @@ NE_counties_base <-  ggplot(data = NE_counties,
 hand <- mid_west_base + geom_point(
   data = WMexample,
   aes(
-    x = lon,
-    y = lat
-    #label= Collection_ID
+    x = long,
+    y = lat,
+    
     # by color the level of selection
-    #shape = Year# by shape the level of Year
+    color = Year,# by shape the level of Year
+    shape = Numberofisolates
     #size = DNA.Extraction# by size the level of DNA.Extraction
   ),
   inherit.aes = FALSE,
@@ -577,6 +705,34 @@ hand <- mid_west_base + geom_point(
 #   )) 
 
 hand
+
+
+hand <- NE_counties_base + geom_point(
+  data = WMexample,
+  aes(
+    x = long,
+    y = lat,
+    
+    # by color the level of selection
+    color = Year,# by shape the level of Year
+    shape = Numberofisolates
+    #size = DNA.Extraction# by size the level of DNA.Extraction
+  ),
+  inherit.aes = FALSE,
+  na.rm = TRUE
+ ) + theme(legend.position = "bottom") 
+# + facet_wrap( ~ num_isolates_per_field) + #Wrapping by the # of isolates/field
+#   scale_color_manual(values = c("red", "blue")) + theme(legend.position = "bottom") + labs(title = "Sclerotinia sclerotiorum Soybean selection from Nebraska") + theme(plot.title = element_text(
+#     size = 10,
+#     face = "bold",
+#     hjust = 0.5,
+#     family = "Helvetica"
+#   )) 
+
+hand
+
+
+
 
 
  mid_west_base + geom_point(
