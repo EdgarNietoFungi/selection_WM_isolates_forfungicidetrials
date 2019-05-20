@@ -138,7 +138,7 @@ counties <- map_data("county")# USA map by counties
 
 mid_west_county <-
   subset(
-    counties,
+    states,
     region == "nebraska" |
       region == "wisconsin" | region == "michigan" | region == "iowa"
   )
@@ -211,13 +211,14 @@ left_join(summary.field.sourceal)  %>% # joining with table of summary of how ma
 arrange(ID) %>% 
 rename(N_iso_perfield =Num_sourceal_isolates, Group= Group_MOA_current_season) 
 
+WM3 <- WM2 %>% mutate(Year= as.factor(Year)) 
 #Summarazing
 View(WM2 %>% group_by(Field, Group, Source, DNA.Extraction) %>%  summarize(N=n()))
 
 
-# as an example
+# Isolates per plot
 
-WMexample <- WM2 %>% 
+WM.isolates.per.plot <- WM2 %>% 
   filter(Year >= 2015) %>% 
   mutate(Year= as.factor(Year)) %>% 
         group_by(Year, State, County, Field, Plot) %>% #filterring those which have same field name, lat and long, in other word 
@@ -229,67 +230,184 @@ na.omit() %>%
 #rename( name= Field) %>% 
 #rename(lon= long) %>% 
  #select(-n) %>% 
-  mutate(Year= as.factor(Year)) %>% 
-  mutate(Numberofisolates= 
-           ifelse(N_iso_per_plot <= 3, "<= 3",
-          ifelse(N_iso_per_plot <= 9, "<= 9", "> 9"
-                       ))) %>% 
-  mutate(Numberofisolates= as.factor(Numberofisolates)) #%>% 
+  #mutate(Year= as.factor(Year)) %>% 
+  mutate(EqualorMorethan10isolates= 
+                     ifelse(N_iso_per_plot >= 10, "Yes", "No"
+                       )) #%>% 
+  #left_join(WM3)
   #filter(State== "NE")
-  
+#  WMexample %>% filter(N_iso_per_plot>= 10)
 
-WMexample %>% kable(format = "markdown",caption = "Table with outliers for each fungicide, NA= never tested, 0= not an outlier but tested, 1= outlier", padding = 0, align = "l") %>%
-   write2pdf("WMexample.pdf")
+# WMexample %>% kable(format = "markdown",caption = "Table with outliers for each fungicide, NA= never tested, 0= not an outlier but tested, 1= outlier", padding = 0, align = "l") %>%
+#    write2pdf("WMexample.pdf")
 
 
 #####
-WMexample.2 <- WM2 %>% 
-  filter(Year >= 2015) %>% 
-  mutate(Year= as.factor(Year)) %>% 
-        group_by(Year, State, County, Field) %>% 
-  summarize(N_iso_per_field= n())
+# WMexample.2 <- WM2 %>% 
+#   filter(Year >= 2015) %>% 
+#   mutate(Year= as.factor(Year)) %>% 
+#         group_by(Year, State, County, Field) %>% 
+#   summarize(N_iso_per_field= n()) %>% 
+#   mutate(EqualorMorethan10isolates= 
+#                      ifelse(N_iso_per_field <= 10, "Yes", "No"
+#                        )) 
 
 
-WMexample.2 %>% kable(format = "markdown",caption = "Table with outliers for each fungicide, NA= never tested, 0= not an outlier but tested, 1= outlier", padding = 0, align = "l") %>%
-   write2pdf("WMexample.2.pdf")
+# WMexample.2 %>% kable(format = "markdown",caption = "Table with outliers for each fungicide, NA= never tested, 0= not an outlier but tested, 1= outlier", padding = 0, align = "l") %>%
+#    write2pdf("WMexample.2.pdf")
+
+WM2_above2015 <- WM2 %>%
+  filter(Year >= 2015) %>%
+  mutate(Year = as.factor(Year)) %>% 
+  select(Year, State, County, Field, Plot) %>% 
+  unique()
 
 #### Plots per field
-WM_plots_per_field <- WM2 %>% 
+WM.plots.per.field <- WM2 %>% 
   ungroup() %>% 
   filter(Year >= 2015) %>% 
   mutate(Year= as.factor(Year)) %>% 
   select(Year, State, County, Field, Plot) %>% 
   group_by(Year, State, County, Field) %>% 
   unique() %>%
-  summarize(N_plots_per_field= n())
+  summarize(N_plots_per_field = n()) %>% 
+  ungroup() %>% 
+  left_join(WM2_above2015) %>% 
+ na.omit() #%>% 
+#rename( name= Field) %>% 
+#rename(lon= long) %>% 
+ #select(-n) %>% 
+  #mutate(Year= as.factor(Year)) %>% 
+  mutate(EqualorMorethan10isolates=
+                     ifelse(N_plots_per_field <= 10, "Yes", "No"
+                       ))
 
-chk <- WM2 %>% 
-  select(Year, State, County, Field, Plot) %>% 
-  filter(Year == 2015, Field == "mont") %>% 
-  unique()
+#### Field per county
 
-#### 
-
-WMexample.3 <- WM2 %>% 
+WM.fields.per.county <- WM2 %>% 
+  ungroup() %>% 
   filter(Year >= 2015) %>% 
   mutate(Year= as.factor(Year)) %>% 
-        group_by(Year, State, County) %>% 
-  summarize(N_iso_per_field= n()) %>%
-  ungroup() %>% 
-  group_by(Year, State) %>% 
+        select(Year, State, County, Field) %>% 
+  unique() %>% 
+  group_by(Year, State, County) %>% 
   summarize(N_field_per_county= n())
   
-#### by state
-WMexample.4 <- WM2 %>% 
+#### Counties  by state
+WM.counties.per.state <- WM2 %>% 
+  ungroup() %>% 
   filter(Year >= 2015) %>% 
   mutate(Year= as.factor(Year)) %>% 
-        group_by(Year, State, County, Field) %>% 
-  summarize(N_iso_per_field= n()) %>%
-  ungroup() %>% 
-  group_by(Year, State) %>% 
+        select(Year, State, County) %>% 
+  unique() %>% 
+    group_by(Year, State) %>% 
   summarize(N_county_per_state= n())
+###
+Summary.table <-  WM.isolates.per.plot %>% 
+  left_join( WM.plots.per.field)%>% 
+  left_join(WM.fields.per.county) %>% 
+  left_join(WM.counties.per.state) %>%
+  select( Year, State, N_county_per_state, County, N_field_per_county, Field, N_plots_per_field, Plot, N_iso_per_plot, EqualorMorethan10isolates ) %>% 
+  na.omit() 
+
+Summary.table.2 <- Summary.table %>% 
+  filter(EqualorMorethan10isolates == "Yes")
+
+Summary.table.3 <- Summary.table %>% 
+  filter(EqualorMorethan10isolates == "No")
+
+Summary.table.2.USA  <- Summary.table.2 %>% 
+  filter(!State== "SIN")
+Summary.table.2.MEXICO <- Summary.table.2 %>% 
+  filter(State== "SIN")
+
+Summary.table.3.USA  <- Summary.table.3 %>% 
+  filter(!State== "SIN")
+Summary.table.3.MEXICO <- Summary.table.3 %>% 
+  filter(State== "SIN")
+
+SUMMARY.MAP <- WM.isolates.per.plot %>% 
+  left_join( WM.plots.per.field)%>% 
+  left_join(WM.fields.per.county) %>% 
+  left_join(WM.counties.per.state) %>%
+  select( Year, State, N_county_per_state, County, N_field_per_county, Field, N_plots_per_field, Plot, N_iso_per_plot, EqualorMorethan10isolates ) %>% 
+  na.omit() %>% 
+  left_join(WM3)
+
+SUMMARY.MAP.2 <- SUMMARY.MAP %>% 
+  filter(EqualorMorethan10isolates == "Yes")
+
+SUMMARY.MAP.3 <- SUMMARY.MAP %>% 
+  filter(EqualorMorethan10isolates == "No")
+
+SUMMARY.MAP.2.USA  <- SUMMARY.MAP.2 %>% 
+  filter(!State== "SIN")
+SUMMARY.MAP.2.MEXICO <- SUMMARY.MAP.2 %>% 
+  filter(State== "SIN")
+
+SUMMARY.MAP.3.USA  <- SUMMARY.MAP.3 %>% 
+  filter(!State== "SIN")
+SUMMARY.MAP.3.MEXICO <- SUMMARY.MAP.3 %>% 
+  filter(State== "SIN")
 
 
+a <-  Summary.table.2 %>% 
+  group_by( Year, State,  Field) %>%  summarize(n= n()) %>% 
+  ungroup() %>% 
+  group_by( Year, State) %>% 
+  summarize(number= sum(n))
+
+a %>% kable(format = "markdown",caption = "Table with outliers for each fungicide, NA= never tested, 0= not an outlier but tested, 1= outlier", padding = 0, align = "l") %>%
+   write2pdf("Summary moreorequalto10.pdf")
+b <-  Summary.table.3 %>%  group_by( Year, State,  Field) %>%  
+  summarize(n= n()) %>% 
+  ungroup() %>% 
+  group_by( Year, State) %>% 
+  summarize(number= sum(n))
+
+b %>% kable(format = "markdown",caption = "Table with outliers for each fungicide, NA= never tested, 0= not an outlier but tested, 1= outlier", padding = 0, align = "l") %>%
+   write2pdf("Summary_lessthan10.pdf")
+#
+mid_west_base + geom_point(
+  data = SUMMARY.MAP.2.USA,
+  aes(
+    x = long,
+    y = lat,
+      # by color the level of selection
+     #= DNA.Extraction# by shape the level of Year
+    color = DNA.Extraction# by size the level of DNA.Extraction
+      ),
+  inherit.aes = FALSE,
+  na.rm = TRUE
+ ) + theme(legend.position = "right")+
+  facet_wrap(~Year, ncol = 1)
+##
+mid_west_base + geom_point(
+  data = SUMMARY.MAP.3.USA,
+  aes(
+    x = long,
+    y = lat,
+      # by color the level of selection
+     #= DNA.Extraction# by shape the level of Year
+    color = DNA.Extraction# by size the level of DNA.Extraction
+      ),
+  inherit.aes = FALSE,
+  na.rm = TRUE
+ ) + theme(legend.position = "bottom") +
+  facet_wrap(~Year, ncol = 1)
+
+
+  #+
+  #facet_wrap( ~ Year, nrow = 3) #+ #Wrapping by the # of isolates/field
+#   scale_color_manual(values = c("red", "blue")) + theme(legend.position = "bottom") + labs(title = "Sclerotinia sclerotiorum Soybean selection from Nebraska") + theme(plot.title = element_text(
+#     size = 10,
+#     face = "bold",
+#     hjust = 0.5,
+#     family = "Helvetica"
+#   )) 
+
+
+##
 WMexample.2 <- WM2 %>% 
   filter(Country=="USA", 
   Year >= 2015) %>% 
@@ -461,7 +579,7 @@ WM8 <- WM3 %>%
   ),
   inherit.aes = FALSE,
   na.rm = TRUE
- ) + theme(legend.position = "bottom") #+
+ ) + theme(legend.position = "right") #+
   #facet_wrap( ~ Year, nrow = 3) #+ #Wrapping by the # of isolates/field
 #   scale_color_manual(values = c("red", "blue")) + theme(legend.position = "bottom") + labs(title = "Sclerotinia sclerotiorum Soybean selection from Nebraska") + theme(plot.title = element_text(
 #     size = 10,
